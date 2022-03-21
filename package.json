@@ -1,4 +1,5 @@
 {
+  "name": "reunionou-api",
   "scripts": {
     "build": "tsc",
     "eslint": "npx eslint . --ext .js,.ts --fix"
