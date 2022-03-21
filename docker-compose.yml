@@ -1,0 +1,28 @@
+version: "3"
+services:
+  Reunionou_api_adminer:
+    container_name: Reunionou_api_adminer
+    image: adminer:4
+    depends_on:
+      - Reunionou_api_db
+    ports:
+      - ${EXPOSED_ADMINER_PORT}:8080
+    networks:
+      - Reunionou_api
+  
+  Reunionou_api_db:
+    container_name: Reunionou_api_db
+    image: mariadb:latest
+    env_file:
+      - ./database/config/bdd.env
+    volumes:
+      - ./db:/var/lib/mysql
+      - ./database/scripts/schema.sql:/docker-entrypoint-initdb.d/1.sql
+      - ./database/scripts/demo_data.sql:/docker-entrypoint-initdb.d/2.sql
+    networks:
+      - Reunionou_api
+
+
+networks:
+  Reunionou_api:
+    driver: bridge
