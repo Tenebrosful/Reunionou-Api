@@ -1,0 +1,20 @@
+name: Lint
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+        
+  js-ts:
+    name: Lint js-ts
+    runs-on: ubuntu-latest
+    steps:
+      - name: check out code 🛎
+        uses: actions/checkout@v2
+        
+      - name: npm ci
+        run: npm ci
+    
+      - name: Run ESLint
+        run: npm run eslint

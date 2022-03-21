@@ -1,0 +1,56 @@
+name: Lint - Push
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - 'push-action/**'
+
+jobs:        
+  js-ts:
+    name: Lint js-ts
+    runs-on: ubuntu-latest
+    steps:
+      - name: check out code 🛎
+        uses: actions/checkout@v2
+        
+      - name: npm ci
+        run: npm ci
+    
+      - name: Run ESLint
+        run: npm run eslint
+        
+      - uses: actions/upload-artifact@v2
+        with:
+          name: js-ts-linted
+          path: | 
+            ./**/*.ts
+            ./**/*.js
+            !**/node_modules/
+        
+  push:
+    name: Push changes
+    runs-on: ubuntu-latest
+    needs: [js-ts]
+    steps:
+      - name: check out code 🛎
+        uses: actions/checkout@v2
+          
+      - uses: actions/download-artifact@v2
+        with:
+          name: js-ts-linted
+    
+      - name: Commit files
+        continue-on-error: true
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -m "Auto-lint" -a
+      
+      - name: Pushing
+        continue-on-error: true
+        uses: CasperWA/push-protected@v2
+        with:
+          token: ${{ secrets.PUSH_TO_PROTECTED_BRANCH }}
+          branch: main
