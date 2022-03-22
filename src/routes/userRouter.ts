@@ -2,7 +2,8 @@ import * as express from "express";
 import { User } from "../../database/models/User";
 import error404 from "../errors/error404";
 import error405 from "../errors/error405";
-import { igetAllUsers, iuser } from "../responseInterface/userResponse";
+import { ievent } from "../responseInterface/eventResponse";
+import { iallSelfEvents, iallUsers, iuser } from "../responseInterface/userResponse";
 
 const userRouter = express.Router();
 
@@ -13,7 +14,7 @@ userRouter.get("/", async (req, res, next) => {
         attributes: ["id", "username", "default_event_mail", "last_connexion", "createdAt", "updatedAt"]
       });
 
-    const result: igetAllUsers = {
+    const result: iallUsers = {
       count,
       users: []
     };
