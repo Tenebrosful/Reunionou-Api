@@ -8,6 +8,7 @@ import userRouter from "./routes/userRouter";
 
 import error400 from "./errors/error400";
 import error500 from "./errors/error500";
+import eventRouter from "./routes/eventRouter";
 
 const app = express();
 const port = process.env.EXPRESS_PORT || 3000;
@@ -23,6 +24,7 @@ app.use(bodyParser.json());
  * Routes
  */
 app.use("/api/user", userRouter);
+app.use("/api/event", eventRouter);
 
 /**
  * Handle Errors

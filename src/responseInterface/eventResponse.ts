@@ -1,4 +1,7 @@
-import { iuser } from "./userResponse";
+export interface iallEvents {
+  count: number,
+  events: ievent[],
+}
 
 export interface ievent {
   id: string,
