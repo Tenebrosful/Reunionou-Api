@@ -18,3 +18,12 @@ export interface iallSelfEvents {
   count: number,
   events: Omit<ievent, "owner">[],
 }
+
+export interface iallJoinedEvents {
+  count: number,
+  events: ipartipantEvent[],
+}
+
+export interface ipartipantEvent extends ievent {
+  comeToEvent: boolean
+}
