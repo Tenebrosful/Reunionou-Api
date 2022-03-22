@@ -16,7 +16,7 @@ export interface iuser {
 
 export interface iallSelfEvents {
   count: number,
-  events: Omit<ievent, "owner">[],
+  events: Omit<ievent, "owner_id">[],
 }
 
 export interface iallJoinedEvents {

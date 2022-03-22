@@ -157,7 +157,7 @@ userRouter.get("/:id/joined-event", async (req, res, next) => {
       },
       description: joinedEvent.description,
       id: joinedEvent.id,
-      owner: joinedEvent.owner,
+      owner_id: joinedEvent.owner_id,
       title: joinedEvent.title,
     }));
 

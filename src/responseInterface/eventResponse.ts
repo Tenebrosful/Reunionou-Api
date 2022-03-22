@@ -5,7 +5,7 @@ export interface ievent {
   title: string,
   description: string,
   coords: icoords,
-  owner: iuser,
+  owner_id: string,
 }
 
 export interface icoords {
