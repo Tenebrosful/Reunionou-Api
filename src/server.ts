@@ -4,7 +4,7 @@ import { initBDD } from "../database/database";
 import * as bodyParser from "body-parser";
 import logger from "./middleware/logger";
 
-import userRouter from "./routes/user";
+import userRouter from "./routes/userRouter";
 
 import error400 from "./errors/error400";
 import error500 from "./errors/error500";
