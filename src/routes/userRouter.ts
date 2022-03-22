@@ -57,6 +57,21 @@ userRouter.get("/:id", async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
+userRouter.delete("/:id", async (req, res, next) => {
+  try {
+    const isDeleted = await User.destroy(
+      {
+        where: {
+          id: req.params.id
+        }
+      });
+
+    if (!isDeleted) { error404(req, res, `L'utilisateur '${req.params.id}' est introuvable. (Potentiellement soft-delete)`); return; }
+
+    res.status(204).send();
+  } catch (e) { next(e); }
+});
+
 userRouter.get("/:id/self-event", async (req, res, next) => {
   try {
     const user = await User.findOne(
