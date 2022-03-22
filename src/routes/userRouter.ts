@@ -2,6 +2,7 @@ import * as express from "express";
 import { User } from "../../database/models/User";
 import error404 from "../errors/error404";
 import error405 from "../errors/error405";
+import error422 from "../errors/error422";
 import { iallJoinedEvents, iallSelfEvents, iallUsers, iuser } from "../responseInterface/userResponse";
 
 const userRouter = express.Router();
@@ -67,6 +68,28 @@ userRouter.delete("/:id", async (req, res, next) => {
       });
 
     if (!isDeleted) { error404(req, res, `L'utilisateur '${req.params.id}' est introuvable. (Potentiellement soft-delete)`); return; }
+
+    res.status(204).send();
+  } catch (e) { next(e); }
+});
+
+userRouter.post("/:id/restore", async (req, res, next) => {
+  try {
+    const user = await User.findOne(
+      {
+        attributes: ["id", "deletedAt"],
+        paranoid: false,
+        where: {
+          id: req.params.id
+        },
+      });
+
+    console.log(user?.toJSON());
+
+    if (!user) { error404(req, res, `L'utilisateur '${req.params.id}' est introuvable.`); return; }
+    if (user.deletedAt === null) { error422(req, res, `L'utilisateur '${req.params.id}' n'est pas supprimé.`); return; }
+
+    await user.restore();
 
     res.status(204).send();
   } catch (e) { next(e); }
