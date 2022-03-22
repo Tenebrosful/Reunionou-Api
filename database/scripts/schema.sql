@@ -12,8 +12,9 @@ CREATE TABLE `admin` (
   `id` varchar(128) NOT NULL,
   `username` varchar(128) NOT NULL,
   `password` varchar(300) NOT NULL,
-  `createdAt` datetime DEFAULT NULL ON UPDATE current_timestamp(),
-  `updatedAt` datetime DEFAULT NULL,
+  `createdAt` datetime NOT NULL DEFAULT current_timestamp(),
+  `updatedAt` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `deletedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -24,8 +25,9 @@ CREATE TABLE `comment` (
   `event_id` varchar(128) NOT NULL,
   `user_id` varchar(128) NOT NULL,
   `message` text NOT NULL,
-  `createdAt` datetime DEFAULT NULL ON UPDATE current_timestamp(),
-  `updatedAt` datetime DEFAULT NULL,
+  `createdAt` datetime NOT NULL DEFAULT current_timestamp(),
+  `updatedAt` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `deletedAt` datetime DEFAULT NULL,
   KEY `event_id` (`event_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `comment_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `event` (`id`) ON DELETE CASCADE,
@@ -42,8 +44,9 @@ CREATE TABLE `event` (
   `lat` double NOT NULL,
   `long` double NOT NULL,
   `owner_id` varchar(128) DEFAULT NULL,
-  `createdAt` datetime DEFAULT NULL ON UPDATE current_timestamp(),
-  `updatedAt` datetime DEFAULT NULL,
+  `createdAt` datetime NOT NULL DEFAULT current_timestamp(),
+  `updatedAt` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `deletedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `owner_id` (`owner_id`),
   CONSTRAINT `event_ibfk_3` FOREIGN KEY (`owner_id`) REFERENCES `user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
@@ -56,9 +59,10 @@ CREATE TABLE `user` (
   `username` varchar(128) NOT NULL,
   `password` varchar(300) NOT NULL,
   `default_event_mail` varchar(256) DEFAULT NULL,
-  `last_connexion` datetime DEFAULT NULL ON UPDATE current_timestamp(),
-  `createdAt` datetime DEFAULT NULL ON UPDATE current_timestamp(),
-  `updatedAt` datetime DEFAULT NULL,
+  `last_connexion` datetime NOT NULL DEFAULT current_timestamp(),
+  `createdAt` datetime NOT NULL DEFAULT current_timestamp(),
+  `updatedAt` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `deletedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -68,8 +72,9 @@ CREATE TABLE `userevent` (
   `user_id` varchar(128) NOT NULL,
   `event_id` varchar(128) NOT NULL,
   `comeToEvent` tinyint(4) NOT NULL DEFAULT 0,
-  `createdAt` datetime DEFAULT NULL ON UPDATE current_timestamp(),
-  `updatedAt` datetime DEFAULT NULL,
+  `createdAt` datetime NOT NULL DEFAULT current_timestamp(),
+  `updatedAt` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `deletedAt` datetime DEFAULT NULL,
   KEY `event_id` (`event_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `userevent_ibfk_10` FOREIGN KEY (`event_id`) REFERENCES `event` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -77,4 +82,4 @@ CREATE TABLE `userevent` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
--- 2022-03-21 16:53:12
+-- 2022-03-22 09:19:15
