@@ -39,6 +39,7 @@ services:
         - ./node_modules:/usr/src/app/node_modules
       ports:
         - ${EXPOSED_EXPRESS_PORT}:3000
+      command: npx ts-node src/server.ts
       networks:
         - Reunionou_api
 
