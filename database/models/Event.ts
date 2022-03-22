@@ -1,9 +1,9 @@
-import { BelongsTo, BelongsToMany, Column, DataType, Default, ForeignKey, HasMany, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { BelongsTo, BelongsToMany, Column, CreatedAt, DataType, Default, DeletedAt, ForeignKey, HasMany, Model, PrimaryKey, Table, UpdatedAt } from "sequelize-typescript";
 import { Comment } from "./Comment";
 import { User } from "./User";
 import { UserEvent } from "./UserEvent";
 
-@Table({paranoid: true, tableName: "event", timestamps: true})
+@Table({ tableName: "event" })
 export class Event extends Model {
   @PrimaryKey
   @Default(DataType.UUIDV4)
@@ -39,4 +39,13 @@ export class Event extends Model {
 
   @HasMany(() => Comment)
   comments: Comment[];
+
+  @CreatedAt
+  createdAt: Date;
+
+  @UpdatedAt
+  updatedAt: Date;
+
+  @DeletedAt
+  deletedAt: Date;
 }

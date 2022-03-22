@@ -1,8 +1,8 @@
-import { Table, Model, Column, DataType, Default, PrimaryKey, ForeignKey, BelongsTo } from "sequelize-typescript";
+import { Table, Model, Column, DataType, Default, PrimaryKey, ForeignKey, BelongsTo, CreatedAt, DeletedAt, UpdatedAt } from "sequelize-typescript";
 import { Event } from "./Event";
 import { User } from "./User";
 
-@Table({paranoid: true, tableName: "comment", timestamps: true})
+@Table({ tableName: "comment" })
 export class Comment extends Model {
   @PrimaryKey
   @Default(DataType.UUIDV4)
@@ -25,4 +25,13 @@ export class Comment extends Model {
 
   @Column(DataType.TEXT)
   message: string;
+
+  @CreatedAt
+  createdAt: Date;
+
+  @UpdatedAt
+  updatedAt: Date;
+
+  @DeletedAt
+  deletedAt: Date;
 }
