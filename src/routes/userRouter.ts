@@ -33,6 +33,8 @@ userRouter.get("/", async (req, res, next) => {
 
 });
 
+userRouter.all("/", error405(["GET"]));
+
 userRouter.get("/:id", async (req, res, next) => {
   try {
     const user = await User.findOne(
@@ -73,6 +75,8 @@ userRouter.delete("/:id", async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
+userRouter.all("/:id", error405(["GET", "DELETE"]));
+
 userRouter.post("/:id/restore", async (req, res, next) => {
   try {
     const user = await User.findOne(
@@ -92,6 +96,8 @@ userRouter.post("/:id/restore", async (req, res, next) => {
     res.status(204).send();
   } catch (e) { next(e); }
 });
+
+userRouter.all("/:id/restore", error405(["POST"]));
 
 userRouter.get("/:id/self-event", async (req, res, next) => {
   try {
@@ -127,6 +133,8 @@ userRouter.get("/:id/self-event", async (req, res, next) => {
 
   } catch (e) { next(e); }
 });
+
+userRouter.all("/:id/self-event", error405(["GET"]));
 
 userRouter.get("/:id/joined-event", async (req, res, next) => {
   try {
@@ -166,6 +174,6 @@ userRouter.get("/:id/joined-event", async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
-userRouter.use("/", error405(["GET"]));
+userRouter.all("/:id/joined-event", error405(["GET"]));
 
 export default userRouter;
