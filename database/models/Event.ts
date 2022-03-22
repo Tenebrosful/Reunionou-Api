@@ -1,4 +1,5 @@
-import { BelongsTo, BelongsToMany, Column, DataType, Default, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { BelongsTo, BelongsToMany, Column, DataType, Default, ForeignKey, HasMany, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { Comment } from "./Comment";
 import { User } from "./User";
 import { UserEvent } from "./UserEvent";
 
@@ -35,4 +36,7 @@ export class Event extends Model {
 
   @BelongsToMany(() => User, () => UserEvent)
   participants: User[];
+
+  @HasMany(() => Comment)
+  comments: Comment[];
 }

@@ -1,4 +1,5 @@
 import { BelongsToMany, Column, DataType, Default, HasMany, IsEmail, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { Comment } from "./Comment";
 import { Event } from "./Event";
 import { UserEvent } from "./UserEvent";
 
@@ -17,7 +18,7 @@ export class User extends Model {
 
   @IsEmail
   @Column(DataType.STRING(256))
-  default_event_mail: string
+  default_event_mail: string;
 
   @Default(null)
   @Column(DataType.DATE)
@@ -26,6 +27,10 @@ export class User extends Model {
   @HasMany(() => Event)
   ownedEvents: Event[];
 
+  @HasMany(() => Comment)
+  comments: Comment[];
+
   @BelongsToMany(() => Event, () => UserEvent)
   events: Event[];
+  
 }
