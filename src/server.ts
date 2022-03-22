@@ -22,14 +22,6 @@ app.use(bodyParser.json());
 /**
  * Routes
  */
-app.use("/", (req, res) => {
-    res.status(200).send("It Works ! (Cependant attention, la base de l'url est /api et non /)");
-});
-
-app.use("/api", (req, res) => {
-    res.status(200).send("It Works !");
-});
-
 app.use("/api/user", userRouter);
 
 /**
