@@ -9,7 +9,7 @@ export default function error405(allowedMethod: method[]) {
       .set("Allow", allowedMethod.join(", "))
       .status(405).json({
         code: 405,
-        message: "Méthode non-autorisée"
+        message: `Méthode non-autorisée. Disponible: ${allowedMethod.join(", ")}`
       });
   };
 }
