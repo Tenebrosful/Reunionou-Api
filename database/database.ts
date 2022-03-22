@@ -1,4 +1,9 @@
 import { Sequelize } from "sequelize-typescript";
+import { Admin } from "./models/Admin";
+import { Comment } from "./models/Comment";
+import { Event } from "./models/Event";
+import { User } from "./models/User";
+import { UserEvent } from "./models/UserEvent";
 
 let BDDInstance: Sequelize;
 
@@ -9,7 +14,7 @@ const instance = new Sequelize({
   database: process.env.MARIADB_DATABASE,
   dialect: "mariadb",
   host: process.env.MARIADB_HOST,
-  models: [],
+  models: [Admin, Comment, Event, User, UserEvent],
   password: process.env.MARIADB_PASSWORD,
   port: 3306,
   username: process.env.MARIADB_USER,
