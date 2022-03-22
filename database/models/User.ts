@@ -1,4 +1,6 @@
-import { AllowNull, Column, DataType, Default, IsEmail, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { BelongsToMany, Column, DataType, Default, HasMany, IsEmail, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { Event } from "./Event";
+import { UserEvent } from "./UserEvent";
 
 @Table({paranoid: true, tableName: "user", timestamps: true})
 export class User extends Model {
@@ -20,4 +22,10 @@ export class User extends Model {
   @Default(null)
   @Column(DataType.DATE)
   last_connexion: Date;
+
+  @HasMany(() => Event)
+  ownedEvents: Event[];
+
+  @BelongsToMany(() => Event, () => UserEvent)
+  events: Event[];
 }

@@ -1,5 +1,6 @@
-import { BelongsTo, Column, DataType, Default, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { BelongsTo, BelongsToMany, Column, DataType, Default, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
 import { User } from "./User";
+import { UserEvent } from "./UserEvent";
 
 @Table({paranoid: true, tableName: "event", timestamps: true})
 export class Event extends Model {
@@ -31,4 +32,7 @@ export class Event extends Model {
 
   @BelongsTo(() => User, "owner_id")
   owner: User;
+
+  @BelongsToMany(() => User, () => UserEvent)
+  participants: User[];
 }
