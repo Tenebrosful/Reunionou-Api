@@ -22,6 +22,24 @@ services:
     networks:
       - Reunionou_api
 
+  Reunionou_api:
+      container_name: Reunionou_api
+      image: node:17
+      depends_on:
+        - Reunionou_api_db
+      links:
+        - Reunionou_api_db
+      env_file:
+        - ./database/config/bdd.env
+      working_dir: /usr/src/app
+      volumes:
+        - ./database:/usr/src/app/database
+        - ./src:/usr/src/app/src
+        - ./node_modules:/usr/src/app/node_modules
+      ports:
+        - ${EXPOSED_EXPRESS_PORT}:3000
+      networks:
+        - Reunionou_api
 
 networks:
   Reunionou_api:
