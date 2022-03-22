@@ -84,8 +84,6 @@ userRouter.post("/:id/restore", async (req, res, next) => {
         },
       });
 
-    console.log(user?.toJSON());
-
     if (!user) { error404(req, res, `L'utilisateur '${req.params.id}' est introuvable.`); return; }
     if (user.deletedAt === null) { error422(req, res, `L'utilisateur '${req.params.id}' n'est pas supprimé.`); return; }
 
