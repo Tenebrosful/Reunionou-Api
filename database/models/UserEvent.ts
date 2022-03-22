@@ -13,5 +13,5 @@ export class UserEvent extends Model {
   event_id: string;
 
   @Column(DataType.BOOLEAN)
-  comteToEvent: boolean;
+  comeToEvent: boolean;
 }
