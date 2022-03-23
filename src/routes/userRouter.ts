@@ -1,6 +1,6 @@
 import * as express from "express";
 import { User } from "../../database/models/User";
-import userSchema from "../../database/validationSchema/userSchema";
+import userSchema from "../validationSchema/userSchema";
 import error404 from "../errors/error404";
 import error405 from "../errors/error405";
 import error422 from "../errors/error422";
@@ -39,18 +39,21 @@ userRouter.get("/", async (req, res, next) => {
 
 userRouter.post("/", async (req, res, next) => {
   const requestFields: iNewUser = {
-    default_event_mail: req.body.default_mail,
+    default_mail: req.body.default_mail,
     password: req.body.password,
     username: req.body.username,
   };
 
-  
-  if(!handleDataValidation(userSchema, requestFields, req, res, true)) return;
-  
-  requestFields.password = await bcrypt.hash(requestFields.password, 10);
+  if (!handleDataValidation(userSchema, requestFields, req, res, true)) return;
+
+  const validedFields = {
+    default_event_mail: requestFields.default_mail,
+    password: await bcrypt.hash(requestFields.password, 10),
+    username: requestFields.username,
+  };
 
   try {
-    const newUser = await User.create({...requestFields});
+    const newUser = await User.create({ ...validedFields });
 
     if (!newUser) return;
 
