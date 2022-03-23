@@ -35,7 +35,7 @@ export class Event extends Model {
   owner: User;
 
   @BelongsToMany(() => User, () => UserEvent)
-  participants: User[];
+  participants: (User & {UserEvent: UserEvent})[];
 
   @HasMany(() => Comment)
   comments: Comment[];

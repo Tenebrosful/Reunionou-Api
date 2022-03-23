@@ -31,7 +31,7 @@ export class User extends Model {
   comments: Comment[];
 
   @BelongsToMany(() => Event, () => UserEvent)
-  events: Event[];
+  events: Event[] & {UserEvent: UserEvent};
 
   @CreatedAt
   createdAt: Date;
