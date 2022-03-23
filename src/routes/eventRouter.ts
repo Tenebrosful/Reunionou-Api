@@ -40,6 +40,22 @@ eventRouter.get("/", async (req, res, next) => {
         updatedAt: event.updatedAt,
       };
 
+      if (req.query.participants) {
+        e.participants = [];
+
+        const participants = await event.$get("participants");
+
+        participants.forEach(participant => {
+          e.participants?.push({
+            comeToEvent: participant.UserEvent.comeToEvent,
+            createdAt: participant.createdAt,
+            id: participant.id,
+            updatedAt: participant.updatedAt,
+            username: participant.username,
+          });
+        });
+      }
+
       if (req.query.embedOwner)
         if (event.owner_id === null) e.owner = null;
         else {
@@ -165,6 +181,22 @@ eventRouter.get("/:id", async (req, res, next) => {
       title: event.title,
       updatedAt: event.updatedAt,
     };
+
+    if (req.query.participants) {
+      result.participants = [];
+
+      const participants = await event.$get("participants");
+
+      participants.forEach(participant => {
+        result.participants?.push({
+          comeToEvent: participant.UserEvent.comeToEvent,
+          createdAt: participant.createdAt,
+          id: participant.id,
+          updatedAt: participant.updatedAt,
+          username: participant.username,
+        });
+      });
+    }
 
     if (req.query.embedOwner)
       if (event.owner_id === null) result.owner = null;
