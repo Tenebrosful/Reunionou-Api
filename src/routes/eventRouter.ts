@@ -44,9 +44,9 @@ eventRouter.get("/", async (req, res, next) => {
 eventRouter.post("/", async (req, res, next) => {
   const requestFields: iNewEvent = {
     coords: {
-      address: req.body.coords.address,
-      lat: req.body.coords.lat,
-      long: req.body.coords.long,
+      address: req.body.coords?.address,
+      lat: req.body.coords?.lat,
+      long: req.body.coords?.long,
     },
     date: req.body.date,
     description: req.body.description,
