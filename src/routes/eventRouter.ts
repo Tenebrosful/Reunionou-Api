@@ -6,7 +6,7 @@ import error405 from "../errors/error405";
 import error422 from "../errors/error422";
 import handleDataValidation from "../middleware/handleDataValidation";
 import { iNewEvent } from "../requestInterface/eventRequest";
-import { iallComments, iallEvents, ievent } from "../responseInterface/eventResponse";
+import { iallComments, iallEvents, icomment, ievent } from "../responseInterface/eventResponse";
 import eventSchema from "../validationSchema/eventSchema";
 
 const eventRouter = express.Router();
@@ -240,14 +240,36 @@ eventRouter.get("/:id/comments", async (req, res, next) => {
       count: comments.length,
     };
 
-    comments.forEach(comment => result.comments.push({
-      author_id: comment.user_id,
-      createdAt: comment.createdAt,
-      event_id: comment.event_id,
-      id: comment.id,
-      message: comment.message,
-      updatedAt: comment.updatedAt,
-    }));
+    const promises = comments.map(async comment => {
+      const e: icomment = {
+        author_id: comment.user_id,
+        createdAt: comment.createdAt,
+        event_id: comment.event_id,
+        id: comment.id,
+        message: comment.message,
+        updatedAt: comment.updatedAt,
+      };
+
+      if (req.query.embedAuthor)
+        if (comment.user_id === null) e.author = null;
+        else {
+          const author = await comment.$get("author");
+
+          if (!author) return;
+
+          e.author = {
+            createdAt: author.createdAt,
+            id: author.id,
+            updatedAt: author.updatedAt,
+            username: author.username,
+          };
+        }
+
+
+      result.comments.push(e);
+    });
+
+    await Promise.all(promises);
 
     res.status(200).json(result);
   } catch (e) { next(e); }
