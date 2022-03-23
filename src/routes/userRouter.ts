@@ -1,9 +1,13 @@
 import * as express from "express";
 import { User } from "../../database/models/User";
+import userSchema from "../../database/validationSchema/userSchema";
 import error404 from "../errors/error404";
 import error405 from "../errors/error405";
 import error422 from "../errors/error422";
+import handleDataValidation from "../middleware/handleDataValidation";
+import { iNewUser } from "../requestInterface/userRequest";
 import { iallEvents, iallUsers, ipartipantEvent, iuser } from "../responseInterface/userResponse";
+import * as bcrypt from "bcrypt";
 
 const userRouter = express.Router();
 
@@ -33,7 +37,38 @@ userRouter.get("/", async (req, res, next) => {
 
 });
 
-userRouter.all("/", error405(["GET"]));
+userRouter.post("/", async (req, res, next) => {
+  const requestFields: iNewUser = {
+    default_event_mail: req.body.default_mail,
+    password: req.body.password,
+    username: req.body.username,
+  };
+
+  
+  if(!handleDataValidation(userSchema, requestFields, req, res, true)) return;
+  
+  requestFields.password = await bcrypt.hash(requestFields.password, 10);
+
+  try {
+    const newUser = await User.create({...requestFields});
+
+    if (!newUser) return;
+
+    const resData: iuser = {
+      createdAt: newUser.createdAt,
+      default_event_mail: newUser.default_event_mail,
+      id: newUser.id,
+      last_connexion: newUser.last_connexion,
+      updatedAt: newUser.updatedAt,
+      username: newUser.username,
+    };
+
+    res.status(201).json(resData);
+
+  } catch (e) { next(e); }
+});
+
+userRouter.all("/", error405(["GET", "POST"]));
 
 userRouter.get("/:id", async (req, res, next) => {
   try {
