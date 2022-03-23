@@ -17,10 +17,11 @@ export class User extends Model {
   password: string;
 
   @IsEmail
+  @Default(null)
   @Column(DataType.STRING(256))
   default_event_mail: string;
 
-  @Default(null)
+  @Default(DataType.NOW)
   @Column(DataType.DATE)
   last_connexion: Date;
 
