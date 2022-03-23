@@ -45,6 +45,8 @@ eventRouter.get("/", async (req, res, next) => {
 
         const participants = await event.$get("participants");
 
+        let comingParticipant = 0;
+
         participants.forEach(participant => {
           e.participants?.push({
             comeToEvent: participant.UserEvent.comeToEvent,
@@ -53,7 +55,11 @@ eventRouter.get("/", async (req, res, next) => {
             updatedAt: participant.updatedAt,
             username: participant.username,
           });
+          comingParticipant++;
         });
+
+        e.comingParticipant = comingParticipant;
+        e.totalParticipant = participants.length;
       }
 
       if (req.query.embedOwner)
@@ -187,6 +193,8 @@ eventRouter.get("/:id", async (req, res, next) => {
 
       const participants = await event.$get("participants");
 
+      let comingParticipant = 0;
+
       participants.forEach(participant => {
         result.participants?.push({
           comeToEvent: participant.UserEvent.comeToEvent,
@@ -195,7 +203,11 @@ eventRouter.get("/:id", async (req, res, next) => {
           updatedAt: participant.updatedAt,
           username: participant.username,
         });
+        comingParticipant++;
       });
+
+      result.comingParticipant = comingParticipant;
+      result.totalParticipant = participants.length;
     }
 
     if (req.query.embedOwner)
