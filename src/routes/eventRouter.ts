@@ -230,7 +230,22 @@ eventRouter.get("/:id", async (req, res, next) => {
 
 });
 
-eventRouter.all("/:id", error405(["GET"]));
+eventRouter.delete("/:id", async (req, res, next) => {
+  try {
+    const isDeleted = await Event.destroy(
+      {
+        where: {
+          id: req.params.id
+        }
+      });
+
+    if (!isDeleted) { error404(req, res, `L'évènement '${req.params.id}' est introuvable. (Potentiellement soft-delete)`); return; }
+
+    res.status(204).send();
+  } catch (e) { next(e); }
+});
+
+eventRouter.all("/:id", error405(["GET", "DELETE"]));
 
 eventRouter.get("/:id/comments", async (req, res, next) => {
   try {
