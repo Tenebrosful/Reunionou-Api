@@ -14,16 +14,11 @@ export interface iuser {
   updatedAt: Date,
 }
 
-export interface iallSelfEvents {
-  count: number,
-  events: Omit<ievent, "owner_id">[],
-}
-
-export interface iallJoinedEvents {
+export interface iallEvents {
   count: number,
   events: ipartipantEvent[],
 }
 
 export interface ipartipantEvent extends ievent {
-  comeToEvent: boolean
+  comeToEvent?: boolean
 }

@@ -3,7 +3,7 @@ import { User } from "../../database/models/User";
 import error404 from "../errors/error404";
 import error405 from "../errors/error405";
 import error422 from "../errors/error422";
-import { iallJoinedEvents, iallSelfEvents, iallUsers, iuser } from "../responseInterface/userResponse";
+import { iallEvents, iallUsers, ipartipantEvent, iuser } from "../responseInterface/userResponse";
 
 const userRouter = express.Router();
 
@@ -103,7 +103,7 @@ userRouter.get("/:id/self-event", async (req, res, next) => {
   try {
     const user = await User.findOne(
       {
-        attributes: [ "id" ],
+        attributes: ["id"],
         where: {
           id: req.params.id
         }
@@ -113,21 +113,44 @@ userRouter.get("/:id/self-event", async (req, res, next) => {
 
     const selfEvents = await user.$get("ownedEvents");
 
-    const result: iallSelfEvents = {
+    const result: iallEvents = {
       count: selfEvents.length,
       events: []
     };
 
-    selfEvents.forEach(selfEvent => result.events.push({
-      coords: {
-        address: selfEvent.address,
-        lat: selfEvent.lat,
-        long: selfEvent.long,
-      },
-      description: selfEvent.description,
-      id: selfEvent.id,
-      title: selfEvent.title,
-    }));
+    const promises = selfEvents.map(async selfEvent => {
+      const e: ipartipantEvent = {
+        coords: {
+          address: selfEvent.address,
+          lat: selfEvent.lat,
+          long: selfEvent.long,
+        },
+        description: selfEvent.description,
+        id: selfEvent.id,
+        owner_id: selfEvent.owner_id,
+        title: selfEvent.title,
+      };
+
+      if (req.query.participants) {
+        e.participants = [];
+
+        const participants = await selfEvent.$get("participants");
+
+        participants.forEach(participant => {
+          e.participants?.push({
+            comeToEvent: participant.UserEvent.comeToEvent,
+            createdAt: participant.createdAt,
+            id: participant.id,
+            updatedAt: participant.updatedAt,
+            username: participant.username,
+          });
+        });
+      }
+
+      result.events.push(e);
+    });
+
+    await Promise.all(promises);
 
     res.status(200).json(result);
 
@@ -140,7 +163,7 @@ userRouter.get("/:id/joined-event", async (req, res, next) => {
   try {
     const user = await User.findOne(
       {
-        attributes: [ "id" ],
+        attributes: ["id"],
         where: {
           id: req.params.id
         }
@@ -150,24 +173,47 @@ userRouter.get("/:id/joined-event", async (req, res, next) => {
 
     const joinedEvents = await user.$get("events");
 
-    const result: iallJoinedEvents = {
+    const result: iallEvents = {
       count: joinedEvents.length,
       events: []
     };
 
-    joinedEvents.forEach(joinedEvent => result.events.push({
-      // @ts-ignore BelongsToMany add UserEvent attribute
-      comeToEvent: joinedEvent.UserEvent.comeToEvent,
-      coords: {
-        address: joinedEvent.address,
-        lat: joinedEvent.lat,
-        long: joinedEvent.long,
-      },
-      description: joinedEvent.description,
-      id: joinedEvent.id,
-      owner_id: joinedEvent.owner_id,
-      title: joinedEvent.title,
-    }));
+    const promises = joinedEvents.map(async joinedEvent => {
+      const e: ipartipantEvent = {
+        // @ts-ignore BelongsToMany add UserEvent attribute
+        comeToEvent: joinedEvent.UserEvent.comeToEvent,
+        coords: {
+          address: joinedEvent.address,
+          lat: joinedEvent.lat,
+          long: joinedEvent.long,
+        },
+        description: joinedEvent.description,
+        id: joinedEvent.id,
+        owner_id: joinedEvent.owner_id,
+        title: joinedEvent.title,
+      };
+
+      if (req.query.participants) {
+        e.participants = [];
+
+        const participants = await joinedEvent.$get("participants");
+
+        participants.forEach(participant => {
+          e.participants?.push({
+            // @ts-ignore BelongsToMany add UserEvent attribute
+            comeToEvent: participant.UserEvent.comeToEvent,
+            createdAt: participant.createdAt,
+            id: participant.id,
+            updatedAt: participant.updatedAt,
+            username: participant.username,
+          });
+        });
+      }
+
+      result.events.push(e);
+    });
+
+    await Promise.all(promises);
 
     res.status(200).json(result);
 
