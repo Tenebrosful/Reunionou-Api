@@ -163,11 +163,13 @@ userRouter.get("/:id/self-event", async (req, res, next) => {
           lat: selfEvent.lat,
           long: selfEvent.long,
         },
+        createdAt: selfEvent.createdAt,
         date: selfEvent.date,
         description: selfEvent.description,
         id: selfEvent.id,
         owner_id: selfEvent.owner_id,
         title: selfEvent.title,
+        updatedAt: selfEvent.updatedAt,
       };
 
       if (req.query.participants) {
@@ -225,11 +227,13 @@ userRouter.get("/:id/joined-event", async (req, res, next) => {
           lat: joinedEvent.lat,
           long: joinedEvent.long,
         },
+        createdAt: joinedEvent.createdAt,
         date: joinedEvent.date,
         description: joinedEvent.description,
         id: joinedEvent.id,
         owner_id: joinedEvent.owner_id,
         title: joinedEvent.title,
+        updatedAt: joinedEvent.updatedAt,
       };
 
       if (req.query.participants) {

@@ -13,6 +13,8 @@ export interface ievent {
   coords: icoords,
   owner_id: string,
   participants?: iparticipant[],
+  createdAt: Date,
+  updatedAt: Date,
 }
 
 export interface iallComments {
