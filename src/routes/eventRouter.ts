@@ -158,6 +158,21 @@ eventRouter.get("/:id", async (req, res, next) => {
       updatedAt: event.updatedAt,
     };
 
+    if (req.query.embedOwner)
+      if (event.owner_id === null) result.owner = null;
+      else {
+        const owner = await event.$get("owner");
+
+        if (!owner) return;
+
+        result.owner = {
+          createdAt: owner.createdAt,
+          id: owner.id,
+          updatedAt: owner.updatedAt,
+          username: owner.username,
+        };
+      }
+
     res.status(200).json(result);
   } catch (e) { next(e); }
 
