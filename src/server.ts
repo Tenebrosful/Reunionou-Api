@@ -1,4 +1,5 @@
 import * as express from "express";
+import * as cors from "cors";
 import { initBDD } from "../database/database";
 
 import * as bodyParser from "body-parser";
@@ -15,6 +16,7 @@ const port = process.env.EXPRESS_PORT || 3000;
 
 initBDD();
 
+app.use(cors());
 app.use(logger);
 
 app.use(bodyParser.urlencoded({ extended: true }));
