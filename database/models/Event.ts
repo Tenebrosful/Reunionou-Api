@@ -1,4 +1,4 @@
-import { BelongsTo, BelongsToMany, Column, CreatedAt, DataType, Default, DeletedAt, ForeignKey, HasMany, Model, PrimaryKey, Table, UpdatedAt } from "sequelize-typescript";
+import { BelongsTo, BelongsToMany, Column, CreatedAt, DataType, Default, DeletedAt, ForeignKey, HasMany, IsEmail, Model, PrimaryKey, Table, UpdatedAt } from "sequelize-typescript";
 import { Comment } from "./Comment";
 import { User } from "./User";
 import { UserEvent } from "./UserEvent";
@@ -16,6 +16,11 @@ export class Event extends Model {
   @Default(null)
   @Column(DataType.TEXT)
   description: string;
+
+  @Default(null)
+  @IsEmail
+  @Column(DataType.STRING(256))
+  mail: string;
 
   @Column(DataType.DATE)
   date: Date;

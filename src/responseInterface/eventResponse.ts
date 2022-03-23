@@ -9,6 +9,7 @@ export interface ievent {
   id: string,
   title: string,
   description: string,
+  mail: string | null,
   date: Date,
   coords: icoords,
   owner_id: string,

@@ -15,7 +15,7 @@ eventRouter.get("/", async (req, res, next) => {
   try {
     const { count, rows: events } = await Event.findAndCountAll(
       {
-        attributes: ["id", "title", "description", "date", "address", "lat", "long", "owner_id", "createdAt", "updatedAt"]
+        attributes: ["id", "title", "description", "mail", "date", "address", "lat", "long", "owner_id", "createdAt", "updatedAt"]
       });
 
     const result: iallEvents = {
@@ -34,6 +34,7 @@ eventRouter.get("/", async (req, res, next) => {
         date: event.date,
         description: event.description,
         id: event.id,
+        mail: event.mail,
         owner_id: event.owner_id,
         title: event.title,
         updatedAt: event.updatedAt,
@@ -74,6 +75,7 @@ eventRouter.post("/", async (req, res, next) => {
     },
     date: req.body.date,
     description: req.body.description,
+    mail: req.body.mail,
     owner_id: req.body.owner_id,
     title: req.body.title
   };
@@ -86,6 +88,7 @@ eventRouter.post("/", async (req, res, next) => {
     description: requestFields.description,
     lat: requestFields.coords.lat,
     long: requestFields.coords.long,
+    mail: requestFields.mail,
     owner_id: requestFields.owner_id,
     title: requestFields.title,
   };
@@ -93,14 +96,17 @@ eventRouter.post("/", async (req, res, next) => {
   try {
 
     if (validedFields.owner_id) {
-      const existing_owner = (await User.count(
+      const owner = await User.findOne(
         {
+          attributes: ["id", "default_event_mail"],
           where: {
             id: validedFields.owner_id
           }
-        }) > 0);
+        });
 
-      if (!existing_owner) { error422(req, res, `L'utilisateur '${validedFields.owner_id}' est introuvable. (Potentiellement soft-delete)`); return; }
+      if (!owner) { error422(req, res, `L'utilisateur '${validedFields.owner_id}' est introuvable. (Potentiellement soft-delete)`); return; }
+
+      if (!validedFields.mail) validedFields.mail = owner.default_event_mail;
     }
 
     const newEvent = await Event.create({ ...validedFields });
@@ -117,6 +123,7 @@ eventRouter.post("/", async (req, res, next) => {
       date: newEvent.date,
       description: newEvent.description,
       id: newEvent.id,
+      mail: newEvent.mail,
       owner_id: newEvent.owner_id,
       title: newEvent.title,
       updatedAt: newEvent.updatedAt,
@@ -134,7 +141,7 @@ eventRouter.get("/:id", async (req, res, next) => {
   try {
     const event = await Event.findOne(
       {
-        attributes: ["id", "title", "description", "date", "address", "lat", "long", "owner_id", "createdAt", "updatedAt"],
+        attributes: ["id", "title", "description", "mail", "date", "address", "lat", "long", "owner_id", "createdAt", "updatedAt"],
         where: {
           id: req.params.id
         }
@@ -153,6 +160,7 @@ eventRouter.get("/:id", async (req, res, next) => {
       date: event.date,
       description: event.description,
       id: event.id,
+      mail: event.mail,
       owner_id: event.owner_id,
       title: event.title,
       updatedAt: event.updatedAt,

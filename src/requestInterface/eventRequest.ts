@@ -6,6 +6,7 @@ export interface iNewEvent {
   },
   date?: Date,
   description?: string,
+  mail?: string,
   owner_id?: string,
   title: string,
 }

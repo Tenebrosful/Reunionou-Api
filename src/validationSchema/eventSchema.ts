@@ -8,6 +8,7 @@ const eventSchema = Joi.object({
   },
   date: Joi.date().greater("now"),
   description: Joi.string().optional(),
+  mail: Joi.string().email().optional(),
   owner_id: Joi.string().uuid().optional(),
   title: Joi.string().alphanum(),
 });
