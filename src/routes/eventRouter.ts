@@ -44,8 +44,6 @@ eventRouter.get("/", async (req, res, next) => {
         else {
           const owner = await event.$get("owner");
 
-          console.log(`Event: ${event.id}, User : ${event.owner_id}, ${owner?.toJSON()}`);
-
           if (!owner) return;
 
           e.owner = {
