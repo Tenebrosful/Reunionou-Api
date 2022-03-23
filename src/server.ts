@@ -6,10 +6,11 @@ import * as bodyParser from "body-parser";
 import logger from "./middleware/logger";
 
 import userRouter from "./routes/userRouter";
+import eventRouter from "./routes/eventRouter";
+import adminRouter from "./routes/adminRouter";
 
 import error400 from "./errors/error400";
 import error500 from "./errors/error500";
-import eventRouter from "./routes/eventRouter";
 
 const app = express();
 const port = process.env.EXPRESS_PORT || 3000;
@@ -33,6 +34,7 @@ app.all("/api", (req, res) => {
 });
 app.use("/api/user", userRouter);
 app.use("/api/event", eventRouter);
+app.use("/api/admin", adminRouter);
 
 /**
  * Handle Errors
