@@ -68,4 +68,6 @@ eventRouter.get("/:id", async (req, res, next) => {
 
 });
 
+eventRouter.all("/:id", error405(["GET"]));
+
 export default eventRouter;
