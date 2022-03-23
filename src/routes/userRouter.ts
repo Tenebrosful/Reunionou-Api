@@ -252,6 +252,21 @@ userRouter.get("/:id/joined-event", async (req, res, next) => {
         });
       }
 
+      if (req.query.embedOwner)
+        if (joinedEvent.owner_id === null) e.owner = null;
+        else {
+          const owner = await joinedEvent.$get("owner");
+
+          if (!owner) return;
+
+          e.owner = {
+            createdAt: owner.createdAt,
+            id: owner.id,
+            updatedAt: owner.updatedAt,
+            username: owner.username,
+          };
+        }
+
       result.events.push(e);
     });
 
