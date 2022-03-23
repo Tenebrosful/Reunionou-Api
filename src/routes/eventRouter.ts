@@ -2,7 +2,10 @@ import * as express from "express";
 import { Event } from "../../database/models/Event";
 import error404 from "../errors/error404";
 import error405 from "../errors/error405";
+import handleDataValidation from "../middleware/handleDataValidation";
+import { iNewEvent } from "../requestInterface/eventRequest";
 import { iallComments, iallEvents, ievent } from "../responseInterface/eventResponse";
+import eventSchema from "../validationSchema/eventSchema";
 
 const eventRouter = express.Router();
 
@@ -24,15 +27,68 @@ eventRouter.get("/", async (req, res, next) => {
         lat: event.lat,
         long: event.long
       },
+      createdAt: event.createdAt,
       date: event.date,
       description: event.description,
       id: event.id,
       owner_id: event.owner_id,
       title: event.title,
+      updatedAt: event.updatedAt,
     }));
 
     res.status(200).json(result);
   } catch (e) { next(e); }
+
+});
+
+eventRouter.post("/", async (req, res, next) => {
+  const requestFields: iNewEvent = {
+    coords: {
+      address: req.body.coords.address,
+      lat: req.body.coords.lat,
+      long: req.body.coords.long,
+    },
+    date: req.body.date,
+    description: req.body.description,
+    owner_id: req.body.owner_id,
+    title: req.body.title
+  };
+
+  if (!handleDataValidation(eventSchema, requestFields, req, res, true)) return;
+
+  const validedFields = {
+    address: requestFields.coords.address,
+    date: requestFields.date,
+    description: requestFields.description,
+    lat: requestFields.coords.lat,
+    long: requestFields.coords.long,
+    owner_id: requestFields.owner_id,
+    title: requestFields.title,
+  };
+
+  try {
+    const newEvent = await Event.create({...validedFields});
+
+    if (!newEvent) return;
+
+    const resData: ievent = {
+      coords: {
+        address: newEvent.address,
+        lat: newEvent.lat,
+        long: newEvent.long
+      },
+      createdAt: newEvent.createdAt,
+      date: newEvent.date,
+      description: newEvent.description,
+      id: newEvent.id,
+      owner_id: newEvent.owner_id,
+      title: newEvent.title,
+      updatedAt: newEvent.updatedAt,
+    };
+
+    res.status(201).json(resData);
+
+  } catch(e) { next(e); }
 
 });
 
@@ -57,11 +113,13 @@ eventRouter.get("/:id", async (req, res, next) => {
         lat: event.lat,
         long: event.long
       },
+      createdAt: event.createdAt,
       date: event.date,
       description: event.description,
       id: event.id,
       owner_id: event.owner_id,
       title: event.title,
+      updatedAt: event.updatedAt,
     };
 
     res.status(200).json(result);
