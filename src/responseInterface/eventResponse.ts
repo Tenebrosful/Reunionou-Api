@@ -14,6 +14,20 @@ export interface ievent {
   participants?: iparticipant[],
 }
 
+export interface iallComments {
+  count: number,
+  comments: icomment[],
+}
+
+export interface icomment {
+  id: string,
+  event_id: string,
+  user_id: string,
+  message: string,
+  createdAt: Date,
+  updatedAt: Date,
+}
+
 export interface iparticipant extends Omit<iuser,"last_connexion" | "default_event_mail"> {
   comeToEvent: boolean,
 }
