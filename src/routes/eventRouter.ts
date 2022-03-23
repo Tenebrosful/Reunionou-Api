@@ -1,7 +1,9 @@
 import * as express from "express";
 import { Event } from "../../database/models/Event";
+import { User } from "../../database/models/User";
 import error404 from "../errors/error404";
 import error405 from "../errors/error405";
+import error422 from "../errors/error422";
 import handleDataValidation from "../middleware/handleDataValidation";
 import { iNewEvent } from "../requestInterface/eventRequest";
 import { iallComments, iallEvents, ievent } from "../responseInterface/eventResponse";
@@ -67,7 +69,19 @@ eventRouter.post("/", async (req, res, next) => {
   };
 
   try {
-    const newEvent = await Event.create({...validedFields});
+
+    if (validedFields.owner_id) {
+      const existing_owner = (await User.count(
+        {
+          where: {
+            id: validedFields.owner_id
+          }
+        }) > 0);
+
+      if (!existing_owner) { error422(req, res, `L'utilisateur '${validedFields.owner_id}' est introuvable. (Potentiellement soft-delete)`); return; }
+    }
+
+    const newEvent = await Event.create({ ...validedFields });
 
     if (!newEvent) return;
 
@@ -88,7 +102,7 @@ eventRouter.post("/", async (req, res, next) => {
 
     res.status(201).json(resData);
 
-  } catch(e) { next(e); }
+  } catch (e) { next(e); }
 
 });
 
