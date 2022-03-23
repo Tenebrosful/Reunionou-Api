@@ -12,6 +12,7 @@ export interface ievent {
   date: Date,
   coords: icoords,
   owner_id: string,
+  owner?: Omit<iuser,"last_connexion" | "default_event_mail"> | null,
   participants?: iparticipant[],
   createdAt: Date,
   updatedAt: Date,

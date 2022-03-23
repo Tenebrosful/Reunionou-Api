@@ -23,20 +23,44 @@ eventRouter.get("/", async (req, res, next) => {
       events: []
     };
 
-    events.forEach(event => result.events.push({
-      coords: {
-        address: event.address,
-        lat: event.lat,
-        long: event.long
-      },
-      createdAt: event.createdAt,
-      date: event.date,
-      description: event.description,
-      id: event.id,
-      owner_id: event.owner_id,
-      title: event.title,
-      updatedAt: event.updatedAt,
-    }));
+    const promises = events.map(async event => {
+      const e: ievent = {
+        coords: {
+          address: event.address,
+          lat: event.lat,
+          long: event.long,
+        },
+        createdAt: event.createdAt,
+        date: event.date,
+        description: event.description,
+        id: event.id,
+        owner_id: event.owner_id,
+        title: event.title,
+        updatedAt: event.updatedAt,
+      };
+
+      if (req.query.embedOwner)
+        if (event.owner_id === null) e.owner = null;
+        else {
+          const owner = await event.$get("owner");
+
+          console.log(`Event: ${event.id}, User : ${event.owner_id}, ${owner?.toJSON()}`);
+
+          if (!owner) return;
+
+          e.owner = {
+            createdAt: owner.createdAt,
+            id: owner.id,
+            updatedAt: owner.updatedAt,
+            username: owner.username,
+          };
+        }
+
+
+      result.events.push(e);
+    });
+
+    await Promise.all(promises);
 
     res.status(200).json(result);
   } catch (e) { next(e); }
