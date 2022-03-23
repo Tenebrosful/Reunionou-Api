@@ -26,7 +26,7 @@ export interface iallComments {
 export interface icomment {
   id: string,
   event_id: string,
-  user_id: string,
+  author_id: string,
   message: string,
   createdAt: Date,
   updatedAt: Date,

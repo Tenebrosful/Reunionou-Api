@@ -201,12 +201,12 @@ eventRouter.get("/:id/comments", async (req, res, next) => {
     };
 
     comments.forEach(comment => result.comments.push({
+      author_id: comment.user_id,
       createdAt: comment.createdAt,
       event_id: comment.event_id,
       id: comment.id,
       message: comment.message,
       updatedAt: comment.updatedAt,
-      user_id: comment.user_id,
     }));
 
     res.status(200).json(result);
