@@ -1,4 +1,3 @@
-import events = require("events");
 import * as express from "express";
 import { Event } from "../../database/models/Event";
 import error404 from "../errors/error404";
@@ -11,7 +10,7 @@ eventRouter.get("/", async (req, res, next) => {
   try {
     const { count, rows: events } = await Event.findAndCountAll(
       {
-        attributes: ["id", "title", "description", "address", "lat", "long", "owner_id", "createdAt", "updatedAt"]
+        attributes: ["id", "title", "description", "date", "address", "lat", "long", "owner_id", "createdAt", "updatedAt"]
       });
 
     const result: iallEvents = {
@@ -25,6 +24,7 @@ eventRouter.get("/", async (req, res, next) => {
         lat: event.lat,
         long: event.long
       },
+      date: event.date,
       description: event.description,
       id: event.id,
       owner_id: event.owner_id,
@@ -42,7 +42,7 @@ eventRouter.get("/:id", async (req, res, next) => {
   try {
     const event = await Event.findOne(
       {
-        attributes: ["id", "title", "description", "address", "lat", "long", "owner_id", "createdAt", "updatedAt"],
+        attributes: ["id", "title", "description", "date", "address", "lat", "long", "owner_id", "createdAt", "updatedAt"],
         where: {
           id: req.params.id
         }
@@ -57,6 +57,7 @@ eventRouter.get("/:id", async (req, res, next) => {
         lat: event.lat,
         long: event.long
       },
+      date: event.date,
       description: event.description,
       id: event.id,
       owner_id: event.owner_id,

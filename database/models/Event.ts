@@ -17,6 +17,9 @@ export class Event extends Model {
   @Column(DataType.TEXT)
   description: string;
 
+  @Column(DataType.DATE)
+  date: Date;
+
   @Column(DataType.STRING(256))
   address: string;
 

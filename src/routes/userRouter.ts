@@ -163,6 +163,7 @@ userRouter.get("/:id/self-event", async (req, res, next) => {
           lat: selfEvent.lat,
           long: selfEvent.long,
         },
+        date: selfEvent.date,
         description: selfEvent.description,
         id: selfEvent.id,
         owner_id: selfEvent.owner_id,
@@ -218,13 +219,13 @@ userRouter.get("/:id/joined-event", async (req, res, next) => {
 
     const promises = joinedEvents.map(async joinedEvent => {
       const e: ipartipantEvent = {
-        // @ts-ignore BelongsToMany add UserEvent attribute
         comeToEvent: joinedEvent.UserEvent.comeToEvent,
         coords: {
           address: joinedEvent.address,
           lat: joinedEvent.lat,
           long: joinedEvent.long,
         },
+        date: joinedEvent.date,
         description: joinedEvent.description,
         id: joinedEvent.id,
         owner_id: joinedEvent.owner_id,
@@ -238,7 +239,6 @@ userRouter.get("/:id/joined-event", async (req, res, next) => {
 
         participants.forEach(participant => {
           e.participants?.push({
-            // @ts-ignore BelongsToMany add UserEvent attribute
             comeToEvent: participant.UserEvent.comeToEvent,
             createdAt: participant.createdAt,
             id: participant.id,
