@@ -1,7 +1,7 @@
 import { Column, CreatedAt, DataType, Default, DeletedAt, Model, PrimaryKey, Table, UpdatedAt } from "sequelize-typescript";
 
-@Table({ tableName: "admin" })
-export class Admin extends Model {
+@Table({tableName: "user"})
+export class User extends Model {
   @PrimaryKey
   @Default(DataType.UUIDV4)
   @Column(DataType.UUIDV4)
@@ -12,6 +12,10 @@ export class Admin extends Model {
 
   @Column(DataType.STRING(300))
   password: string;
+
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  isAdmin: boolean;
 
   @CreatedAt
   createdAt: Date;

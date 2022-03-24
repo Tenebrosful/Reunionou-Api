@@ -1,6 +1,6 @@
 import * as express from "express";
 import * as cors from "cors";
-import { initBDD } from "../database/database";
+import { initBDD } from "../databases/main/database";
 
 import * as bodyParser from "body-parser";
 import logger from "./middleware/logger";

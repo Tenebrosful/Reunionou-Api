@@ -3,22 +3,32 @@ services:
   Reunionou_api_adminer:
     container_name: Reunionou_api_adminer
     image: adminer:4
-    depends_on:
-      - Reunionou_api_db
     ports:
       - ${EXPOSED_ADMINER_PORT}:8080
     networks:
       - Reunionou_api
   
-  Reunionou_api_db:
-    container_name: Reunionou_api_db
+  Reunionou_api_db_main:
+    container_name: Reunionou_api_db_main
     image: mariadb:latest
     env_file:
-      - ./database/config/bdd.env
+      - ./databases/main/config/bdd.env
     volumes:
-      - ./db:/var/lib/mysql
-      - ./database/scripts/schema.sql:/docker-entrypoint-initdb.d/1.sql
-      - ./database/scripts/demo_data.sql:/docker-entrypoint-initdb.d/2.sql
+      - ./databases/data/main:/var/lib/mysql
+      - ./databases/main/scripts/schema.sql:/docker-entrypoint-initdb.d/1.sql
+      - ./databases/main/scripts/demo_data.sql:/docker-entrypoint-initdb.d/2.sql
+    networks:
+      - Reunionou_api
+
+  Reunionou_api_db_auth:
+    container_name: Reunionou_api_db_auth
+    image: mariadb:latest
+    env_file:
+      - ./databases/authentification/config/bdd.env
+    volumes:
+      - ./databases/data/auth:/var/lib/mysql
+      - ./databases/authentification/scripts/schema.sql:/docker-entrypoint-initdb.d/1.sql
+      - ./databases/authentification/scripts/demo_data.sql:/docker-entrypoint-initdb.d/2.sql
     networks:
       - Reunionou_api
 
@@ -26,9 +36,9 @@ services:
       container_name: Reunionou_api
       image: node:17
       depends_on:
-        - Reunionou_api_db
+        - Reunionou_api_db_main
       links:
-        - Reunionou_api_db
+        - Reunionou_api_db_main
       env_file:
         - ./database/config/bdd.env
       environment:
