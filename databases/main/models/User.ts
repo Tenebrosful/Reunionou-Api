@@ -13,17 +13,10 @@ export class User extends Model {
   @Column(DataType.STRING(128))
   username: string;
 
-  @Column(DataType.STRING(300))
-  password: string;
-
   @IsEmail
   @Default(null)
   @Column(DataType.STRING(256))
   default_event_mail: string;
-
-  @Default(DataType.NOW)
-  @Column(DataType.DATE)
-  last_connexion: Date;
 
   @HasMany(() => Event)
   ownedEvents: Event[];

@@ -1,13 +1,9 @@
 import * as express from "express";
 import * as cors from "cors";
-import { initBDD } from "../database/database";
+import { initBDD } from "../../../databases/main/database";
 
 import * as bodyParser from "body-parser";
 import logger from "./middleware/logger";
-
-import userRouter from "./routes/userRouter";
-import eventRouter from "./routes/eventRouter";
-import adminRouter from "./routes/adminRouter";
 
 import error400 from "./errors/error400";
 import error500 from "./errors/error500";
@@ -32,9 +28,6 @@ app.all("/", (req, res) => {
 app.all("/api", (req, res) => {
     res.status(200).send("It Works !");
 });
-app.use("/api/user", userRouter);
-app.use("/api/event", eventRouter);
-app.use("/api/admin", adminRouter);
 
 /**
  * Handle Errors
