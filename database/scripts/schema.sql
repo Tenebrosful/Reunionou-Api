@@ -40,6 +40,8 @@ CREATE TABLE `event` (
   `id` varchar(128) NOT NULL,
   `title` varchar(128) NOT NULL,
   `description` text DEFAULT NULL,
+  `mail` varchar(256) DEFAULT NULL,
+  `date` datetime NOT NULL,
   `address` varchar(256) NOT NULL,
   `lat` double NOT NULL,
   `long` double NOT NULL,
@@ -82,4 +84,4 @@ CREATE TABLE `userevent` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
--- 2022-03-22 09:19:15
+-- 2022-03-23 16:04:27

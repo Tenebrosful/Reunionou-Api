@@ -8,17 +8,16 @@ import { UserEvent } from "./models/UserEvent";
 let BDDInstance: Sequelize;
 
 export async function initBDD() {
-  console.log(process.env.MARIADB_DATABASE, process.env.BDD_DRIVER, process.env.MARIADB_HOST, process.env.MARIADB_PASSWORD, process.env.MARIADB_USER);
-
-const instance = new Sequelize({
-  database: process.env.MARIADB_DATABASE,
-  dialect: "mariadb",
-  host: process.env.MARIADB_HOST,
-  models: [Admin, Comment, Event, User, UserEvent],
-  password: process.env.MARIADB_PASSWORD,
-  port: 3306,
-  username: process.env.MARIADB_USER,
-});
+  const instance = new Sequelize({
+    database: process.env.MARIADB_DATABASE,
+    dialect: "mariadb",
+    host: process.env.MARIADB_HOST,
+    logging: process.env.SEQUELIZE_LOGS?.toLocaleLowerCase() === "true" || false, 
+    models: [Admin, Comment, Event, User, UserEvent],
+    password: process.env.MARIADB_PASSWORD,
+    port: 3306,
+    username: process.env.MARIADB_USER,
+  });
 
 
   try {

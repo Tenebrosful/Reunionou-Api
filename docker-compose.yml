@@ -31,14 +31,20 @@ services:
         - Reunionou_api_db
       env_file:
         - ./database/config/bdd.env
+      environment:
+        - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+        - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
       working_dir: /usr/src/app
       volumes:
         - ./tsconfig.json:/usr/src/app/tsconfig.json
+        - ./package.json:/usr/src/app/package.json
+        - ./package-lock.json:/usr/src/app/package-lock.json
         - ./database:/usr/src/app/database
         - ./src:/usr/src/app/src
         - ./node_modules:/usr/src/app/node_modules
       ports:
         - ${EXPOSED_EXPRESS_PORT}:3000
+      command: npx ts-node src/server.ts
       networks:
         - Reunionou_api
 

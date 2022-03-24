@@ -1,6 +1,6 @@
-import { Column, DataType, Default, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { Column, CreatedAt, DataType, Default, DeletedAt, Model, PrimaryKey, Table, UpdatedAt } from "sequelize-typescript";
 
-@Table({paranoid: true, tableName: "admin", timestamps: true})
+@Table({ tableName: "admin" })
 export class Admin extends Model {
   @PrimaryKey
   @Default(DataType.UUIDV4)
@@ -11,5 +11,14 @@ export class Admin extends Model {
   username: string;
 
   @Column(DataType.STRING(300))
-  password: string;  
+  password: string;
+
+  @CreatedAt
+  createdAt: Date;
+
+  @UpdatedAt
+  updatedAt: Date;
+
+  @DeletedAt
+  deletedAt: Date;
 }

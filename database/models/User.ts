@@ -1,9 +1,9 @@
-import { BelongsToMany, Column, DataType, Default, HasMany, IsEmail, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { BelongsToMany, Column, CreatedAt, DataType, Default, DeletedAt, HasMany, IsEmail, Model, PrimaryKey, Table, UpdatedAt } from "sequelize-typescript";
 import { Comment } from "./Comment";
 import { Event } from "./Event";
 import { UserEvent } from "./UserEvent";
 
-@Table({paranoid: true, tableName: "user", timestamps: true})
+@Table({tableName: "user"})
 export class User extends Model {
   @PrimaryKey
   @Default(DataType.UUIDV4)
@@ -17,10 +17,11 @@ export class User extends Model {
   password: string;
 
   @IsEmail
+  @Default(null)
   @Column(DataType.STRING(256))
   default_event_mail: string;
 
-  @Default(null)
+  @Default(DataType.NOW)
   @Column(DataType.DATE)
   last_connexion: Date;
 
@@ -31,6 +32,14 @@ export class User extends Model {
   comments: Comment[];
 
   @BelongsToMany(() => Event, () => UserEvent)
-  events: Event[];
-  
+  events: (Event & {UserEvent: UserEvent})[];
+
+  @CreatedAt
+  createdAt: Date;
+
+  @UpdatedAt
+  updatedAt: Date;
+
+  @DeletedAt
+  deletedAt: Date;
 }
