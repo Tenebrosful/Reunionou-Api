@@ -7,7 +7,7 @@ const eventSchema = Joi.object({
     long: Joi.number().min(-90).max(90),
   },
   date: Joi.date().greater("now"),
-  description: Joi.string().optional(),
+  description: Joi.string().normalize().optional(),
   mail: Joi.string().email().optional(),
   owner_id: Joi.string().uuid().optional(),
   title: Joi.string().alphanum(),
