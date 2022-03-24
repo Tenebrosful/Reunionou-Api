@@ -188,7 +188,7 @@ userRouter.get("/:id/self-event", async (req, res, next) => {
             updatedAt: participant.updatedAt,
             username: participant.username,
           });
-          comingParticipant++;
+          if (participant.UserEvent.comeToEvent) comingParticipant++;
         });
 
         e.comingParticipant = comingParticipant;
@@ -259,7 +259,7 @@ userRouter.get("/:id/joined-event", async (req, res, next) => {
             updatedAt: participant.updatedAt,
             username: participant.username,
           });
-          comingParticipant++;
+          if (participant.UserEvent.comeToEvent) comingParticipant++;
         });
 
         e.comingParticipant = comingParticipant;
