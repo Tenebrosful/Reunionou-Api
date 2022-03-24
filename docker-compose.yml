@@ -40,7 +40,7 @@ services:
       links:
         - Reunionou_api_db_main
       env_file:
-        - ./database/config/bdd.env
+        - ./databases/main/config/bdd.env
       environment:
         - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
         - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
@@ -53,8 +53,34 @@ services:
         - ./services/main:/usr/src/app/services/main
         - ./node_modules:/usr/src/app/node_modules
       ports:
-        - ${EXPOSED_EXPRESS_PORT}:3000
-      command: npx ts-node /services/main/src/server.ts
+        - ${EXPOSED_MAIN_API_PORT}:3000
+      command: npx ts-node services/main/src/server.ts
+      networks:
+        - Reunionou_api
+
+  Reunionou_api_auth:
+      container_name: Reunionou_api_auth
+      image: node:17
+      depends_on:
+        - Reunionou_api_db_auth
+      links:
+        - Reunionou_api_db_auth
+      env_file:
+        - ./databases/authentification/config/bdd.env
+      environment:
+        - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+        - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+      working_dir: /usr/src/app
+      volumes:
+        - ./tsconfig.json:/usr/src/app/tsconfig.json
+        - ./package.json:/usr/src/app/package.json
+        - ./package-lock.json:/usr/src/app/package-lock.json
+        - ./databases/main:/usr/src/app/databases/main
+        - ./services/main:/usr/src/app/services/main
+        - ./node_modules:/usr/src/app/node_modules
+      ports:
+        - ${EXPOSED_AUTH_API_PORT}:3000
+      command: npx ts-node services/main/src/server.ts
       networks:
         - Reunionou_api
 

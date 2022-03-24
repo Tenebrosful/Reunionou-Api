@@ -4,6 +4,8 @@ import { User } from "./models/User";
 let BDDInstance: Sequelize;
 
 export async function initBDD() {
+  console.log(process.env.MARIADB_DATABASE, process.env.MARIADB_HOST);
+  
   const instance = new Sequelize({
     database: process.env.MARIADB_DATABASE,
     dialect: "mariadb",
