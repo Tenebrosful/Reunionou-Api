@@ -5,6 +5,11 @@ export interface iallEvents {
   events: ievent[],
 }
 
+export interface iallParticipants {
+  count: number,
+  participants: iparticipant[],
+}
+
 export interface ievent {
   id: string,
   title: string,

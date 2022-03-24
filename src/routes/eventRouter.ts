@@ -6,7 +6,7 @@ import error405 from "../errors/error405";
 import error422 from "../errors/error422";
 import handleDataValidation from "../middleware/handleDataValidation";
 import { iNewEvent } from "../requestInterface/eventRequest";
-import { iallComments, iallEvents, icomment, ievent } from "../responseInterface/eventResponse";
+import { iallComments, iallEvents, iallParticipants, icomment, ievent } from "../responseInterface/eventResponse";
 import eventSchema from "../validationSchema/eventSchema";
 
 const eventRouter = express.Router();
@@ -246,6 +246,41 @@ eventRouter.delete("/:id", async (req, res, next) => {
 });
 
 eventRouter.all("/:id", error405(["GET", "DELETE"]));
+
+eventRouter.get("/:id/participants", async (req, res, next) => {
+  try {
+    const event = await Event.findOne(
+      {
+        attributes: ["id"],
+        where: {
+          id: req.params.id
+        }
+      });
+
+
+    if (!event) { error404(req, res, `L'évènement '${req.params.id}' est introuvable. (Potentiellement soft-delete)`); return; }
+
+    const participants = await event.$get("participants");
+
+    const result: iallParticipants = {
+      count: participants.length,
+      participants: []
+    };
+
+    participants.forEach(participant => result.participants.push({
+      comeToEvent: participant.UserEvent.comeToEvent,
+      createdAt: participant.createdAt,
+      id: participant.id,
+      updatedAt: participant.updatedAt,
+      username: participant.username,
+    }));
+
+    res.status(200).json(result);
+  } catch (e) { next(e); }
+
+});
+
+eventRouter.all("/:id/participants", error405(["GET"]));
 
 eventRouter.get("/:id/comments", async (req, res, next) => {
   try {
