@@ -3,14 +3,12 @@ import { UserAccount } from "./models/UserAccount";
 
 let BDDInstance: Sequelize;
 
-export async function initBDD() {
-  console.log(process.env.MARIADB_DATABASE, process.env.MARIADB_HOST);
-  
+export async function initBDD() {  
   const instance = new Sequelize({
     database: process.env.MARIADB_DATABASE,
     dialect: "mariadb",
     host: process.env.MARIADB_HOST,
-    logging: process.env.SEQUELIZE_LOGS?.toLocaleLowerCase() === "true" || false, 
+    logging: process.env.NODE_ENV === "dev", 
     models: [UserAccount],
     password: process.env.MARIADB_PASSWORD,
     port: 3306,
