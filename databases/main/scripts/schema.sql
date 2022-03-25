@@ -1,4 +1,4 @@
--- Adminer 4.8.1 MySQL 5.5.5-10.6.5-MariaDB-1:10.6.5+maria~focal dump
+-- Adminer 4.8.1 MySQL 5.5.5-10.7.3-MariaDB-1:10.7.3+maria~focal dump
 
 SET NAMES utf8;
 SET time_zone = '+00:00';
@@ -6,18 +6,6 @@ SET foreign_key_checks = 0;
 SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
 SET NAMES utf8mb4;
-
-DROP TABLE IF EXISTS `admin`;
-CREATE TABLE `admin` (
-  `id` varchar(128) NOT NULL,
-  `username` varchar(128) NOT NULL,
-  `password` varchar(300) NOT NULL,
-  `createdAt` datetime NOT NULL DEFAULT current_timestamp(),
-  `updatedAt` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `deletedAt` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 
 DROP TABLE IF EXISTS `comment`;
 CREATE TABLE `comment` (
@@ -59,9 +47,7 @@ DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` varchar(128) NOT NULL,
   `username` varchar(128) NOT NULL,
-  `password` varchar(300) NOT NULL,
   `default_event_mail` varchar(256) DEFAULT NULL,
-  `last_connexion` datetime NOT NULL DEFAULT current_timestamp(),
   `createdAt` datetime NOT NULL DEFAULT current_timestamp(),
   `updatedAt` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `deletedAt` datetime DEFAULT NULL,
@@ -84,4 +70,4 @@ CREATE TABLE `userevent` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
--- 2022-03-23 16:04:27
+-- 2022-03-25 12:01:15

@@ -1,6 +1,6 @@
 import { Column, CreatedAt, DataType, Default, DeletedAt, Model, PrimaryKey, Table, UpdatedAt } from "sequelize-typescript";
 
-@Table({tableName: "user"})
+@Table({tableName: "userAccount"})
 export class UserAccount extends Model {
   @PrimaryKey
   @Default(DataType.UUIDV4)
@@ -16,6 +16,10 @@ export class UserAccount extends Model {
   @Default(false)
   @Column(DataType.BOOLEAN)
   isAdmin: boolean;
+
+  @Default(DataType.NOW)
+  @Column(DataType.DATE)
+  last_connexion: Date;
 
   @CreatedAt
   createdAt: Date;

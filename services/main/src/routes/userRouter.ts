@@ -33,7 +33,24 @@ userRouter.get("/", async (req, res, next) => {
 
 });
 
-userRouter.post("/", error501);
+userRouter.post("/", async (req, res, next) => {
+
+  const userFields = {
+    id: req.body.id,
+    username: req.body.username,
+    default_event_mail: req.body.default_event_mail,
+  };
+
+    try {
+      const user = await User.create({ ...userFields });
+
+      if (user) {
+        res.status(201).send();
+      }
+    } catch (error) {
+      next(error);
+    }
+});
 
 userRouter.all("/", error405(["GET", "POST"]));
 

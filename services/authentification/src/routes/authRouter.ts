@@ -1,24 +1,24 @@
 import * as express from "express";
-import { UserAccount } from "../../../../databases/authentification/models/User";
-import error404 from "../errors/error404";
+import { UserAccount } from "../../../../databases/authentification/models/UserAccount";
 import error405 from "../errors/error405";
-import error422 from "../errors/error422";
-import error501 from "../errors/error501";
 import handleDataValidation from "../middleware/handleDataValidation";
 import * as jwt from "jsonwebtoken";
 import * as bcrypt from "bcrypt"
-import ConnectionSchema from "../validateSchema/ConnectionSchema";
+import InscriptionSchema from "../validateSchema/InscriptionSchema";
+import error401 from "../errors/error401";
+import AuthSchema from "../validateSchema/AuthSchema";
+import error404 from "../errors/error404";
 
 const authRouter = express.Router();
 
-authRouter.post("/auth", async (req, res, next) => {
+authRouter.post("/", async (req, res, next) => {
 
     const userFields = {
         login: req.body.login,
         password: req.body.password,
     };
 
-    if (!handleDataValidation(ConnectionSchema, userFields, req, res, true)) return;
+    if (!handleDataValidation(AuthSchema, userFields, req, res, true)) return;
 
     try {
         const userAccount = await UserAccount.findOne(
@@ -30,27 +30,23 @@ authRouter.post("/auth", async (req, res, next) => {
 
         if (!userAccount) {
 
-            res.status(404).json({
-                code: 404,
-                message: `Aucun utilisateur pour l'identifiant ${userFields.login}`
-            });
+            error401(req, res, "Combinaison identifiant mot de passe invalide");
             return;
         }
 
         bcrypt.compare(userFields.password, userAccount.password, function (err, result) {
             if (result) {
+                userAccount.update({last_connexion: Date.now()});
                 const token = jwt.sign(
                     {
                         id: userAccount.id,
-                        mail: userAccount.isAdmin,
+                        isAdmin: userAccount.isAdmin,
+                        last_connexion: userAccount.last_connexion,
                     },
                     process.env.SECRETPASSWDTOKEN || "", { expiresIn: "2h" });
                 res.status(200).json({ token });
             } else {
-                res.status(403).json({
-                    code: 403,
-                    message: `Le mot de passe est incorrect`
-                });
+                error401(req, res, "Combinaison identifiant mot de passe invalide");
                 return;
             }
         });
@@ -61,47 +57,47 @@ authRouter.post("/auth", async (req, res, next) => {
 
 });
 
-authRouter.post("/tokenVerify", async (req, res, next) => {
+authRouter.all("/", error405(["POST"]));
+
+authRouter.post("/tokenverify", async (req, res, next) => {
 
     let tokenData;
-  
+
     jwt.verify(req.headers["authorization"] as string, process.env.SECRETPASSWDTOKEN || "", (err: any, decode: any) => {
-      if (err) 
-        res.status(403).json({
-          code: 403,
-          message: err.message
-        });
-  
-       else tokenData = decode;
+        if (err)
+            res.status(403).json({
+                code: 403,
+                message: err.message
+            });
+
+        else tokenData = decode;
     });
-  
+
     if (!tokenData) return;
-  
+
     try {
-      const user = await UserAccount.findOne(
-        {
-          attributes: [],
-          // @ts-ignore
-          where: { id: tokenData.id }
-  
-        });
-  
-      if (!user) {
-  
-        res.status(404).json({
-          code: 404,
-          // @ts-ignore
-          message: `Utilisateur non trouvé`
-        });
-        return;
-      }
-  
-      res.status(200).send();
-  
+        const user = await UserAccount.findOne(
+            {
+                attributes: [ "id" ],
+                // @ts-ignore
+                where: { id: tokenData.id }
+
+            });
+
+        if (!user) {
+
+            error404(req, res, "Token invalide");
+            return;
+        }
+
+        res.status(200).send();
+
     } catch (error) {
-      next(error);
+        next(error);
     }
-  
-  });
+
+});
+
+authRouter.all("/tokenverify", error405(["POST"]));
 
 export default authRouter;

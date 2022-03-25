@@ -1,5 +1,5 @@
 import { Sequelize } from "sequelize-typescript";
-import { User } from "./models/User";
+import { UserAccount } from "./models/UserAccount";
 
 let BDDInstance: Sequelize;
 
@@ -11,7 +11,7 @@ export async function initBDD() {
     dialect: "mariadb",
     host: process.env.MARIADB_HOST,
     logging: process.env.SEQUELIZE_LOGS?.toLocaleLowerCase() === "true" || false, 
-    models: [User],
+    models: [UserAccount],
     password: process.env.MARIADB_PASSWORD,
     port: 3306,
     username: process.env.MARIADB_USER,
