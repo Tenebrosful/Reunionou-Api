@@ -7,18 +7,19 @@ import * as bcrypt from "bcrypt";
 import error401 from "../errors/error401";
 import AuthSchema from "../validateSchema/AuthSchema";
 import error404 from "../errors/error404";
+import axios from "axios";
 
 const authRouter = express.Router();
 
 authRouter.post("/", async (req, res, next) => {
-
+    
     const userFields = {
         login: req.body.login,
         password: req.body.password,
     };
-
+    
     if (!handleDataValidation(AuthSchema, userFields, req, res, true)) return;
-
+    
     try {
         const userAccount = await UserAccount.findOne(
             {
@@ -29,13 +30,14 @@ authRouter.post("/", async (req, res, next) => {
 
         if (!userAccount) {
 
-            error401(req, res, "Combinaison identifiant mot de passe invalide");
+            error401(req, res, "Combinaison identifiant mot de passe invalide"); // ici
             return;
         }
 
-        bcrypt.compare(userFields.password, userAccount.password, function (err, result) {
+        bcrypt.compare(userFields.password, userAccount.password, async function (err, result) {
             if (result) {
                 userAccount.update({last_connexion: Date.now()});
+                const response = await axios.post(process.env.API_MAIN_URL + '/user/' + userAccount.id, req.body);
                 const token = jwt.sign(
                     {
                         id: userAccount.id,
@@ -45,7 +47,7 @@ authRouter.post("/", async (req, res, next) => {
                     process.env.SECRETPASSWDTOKEN || "", { expiresIn: "2h" });
                 res.status(200).json({ token });
             } else {
-                error401(req, res, "Combinaison identifiant mot de passe invalide");
+                error401(req, res, "Combinaison identifiant mot de passe invalide"); // ou ici
                 return;
             }
         });
