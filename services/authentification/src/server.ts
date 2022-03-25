@@ -31,8 +31,8 @@ app.all("/api", (req, res) => {
     res.status(200).send("It Works !");
 });
 
-app.use('/api/auth', authRouter)
-app.use("/api/inscription", inscriptionRouter)
+app.use("/api/auth", authRouter);
+app.use("/api/inscription", inscriptionRouter);
 
 /**
  * Handle Errors

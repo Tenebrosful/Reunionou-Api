@@ -1,9 +1,9 @@
 import * as express from "express";
 import { UserAccount } from "../../../../databases/authentification/models/UserAccount";
-import axios from "axios"
+import axios from "axios";
 import handleDataValidation from "../middleware/handleDataValidation";
 import * as jwt from "jsonwebtoken";
-import * as bcrypt from "bcrypt"
+import * as bcrypt from "bcrypt";
 import InscriptionSchema from "../validateSchema/InscriptionSchema";
 
 const inscriptionRouter = express.Router();
@@ -34,8 +34,8 @@ inscriptionRouter.post("/", async (req, res, next) => {
 
     try {
       // @ts-ignore
-      validateFieldsAuth.id = user.id
-      await axios.post(process.env.API_MAIN_URL + '/user', validateFieldsProfile)
+      validateFieldsAuth.id = user.id;
+      await axios.post(process.env.API_MAIN_URL + "/user", validateFieldsProfile);
 
       const token = jwt.sign(
         {
