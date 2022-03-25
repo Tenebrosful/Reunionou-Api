@@ -11,7 +11,7 @@ export async function initBDD() {
     database: process.env.MARIADB_DATABASE,
     dialect: "mariadb",
     host: process.env.MARIADB_HOST,
-    logging: process.env.SEQUELIZE_LOGS?.toLocaleLowerCase() === "true" || false, 
+    logging: process.env.NODE_ENV === "dev",
     models: [Comment, Event, User, UserEvent],
     password: process.env.MARIADB_PASSWORD,
     port: 3306,
