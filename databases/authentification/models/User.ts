@@ -1,14 +1,14 @@
 import { Column, CreatedAt, DataType, Default, DeletedAt, Model, PrimaryKey, Table, UpdatedAt } from "sequelize-typescript";
 
 @Table({tableName: "user"})
-export class User extends Model {
+export class UserAccount extends Model {
   @PrimaryKey
   @Default(DataType.UUIDV4)
   @Column(DataType.UUIDV4)
   id: string;
 
   @Column(DataType.STRING(128))
-  username: string;
+  login: string;
 
   @Column(DataType.STRING(300))
   password: string;
