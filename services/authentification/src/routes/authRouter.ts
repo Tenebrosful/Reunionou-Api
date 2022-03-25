@@ -4,7 +4,6 @@ import error405 from "../errors/error405";
 import handleDataValidation from "../middleware/handleDataValidation";
 import * as jwt from "jsonwebtoken";
 import * as bcrypt from "bcrypt"
-import InscriptionSchema from "../validateSchema/InscriptionSchema";
 import error401 from "../errors/error401";
 import AuthSchema from "../validateSchema/AuthSchema";
 import error404 from "../errors/error404";

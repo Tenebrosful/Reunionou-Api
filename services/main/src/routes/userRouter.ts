@@ -4,8 +4,6 @@ import error404 from "../errors/error404";
 import error405 from "../errors/error405";
 import error422 from "../errors/error422";
 import { iallEvents, iallUsers, ipartipantEvent, iuser } from "../responseInterface/userResponse";
-import error501 from "../errors/error501";
-
 const userRouter = express.Router();
 
 userRouter.get("/", async (req, res, next) => {
@@ -36,9 +34,9 @@ userRouter.get("/", async (req, res, next) => {
 userRouter.post("/", async (req, res, next) => {
 
   const userFields = {
+    default_event_mail: req.body.default_event_mail,
     id: req.body.id,
     username: req.body.username,
-    default_event_mail: req.body.default_event_mail,
   };
 
     try {
