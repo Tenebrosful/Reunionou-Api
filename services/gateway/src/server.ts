@@ -7,6 +7,7 @@ import logger from "./middleware/logger";
 import error400 from "./errors/error400";
 import error500 from "./errors/error500";
 import authRouter from "./routes/authRouter";
+import eventRouter from "./routes/eventRouter";
 
 
 const app = express();
@@ -30,6 +31,7 @@ app.all("/api", (req, res) => {
 });
 
 app.use("/api/auth", authRouter);
+app.use("/api/event", eventRouter);
 
 /**
  * Handle Errors
