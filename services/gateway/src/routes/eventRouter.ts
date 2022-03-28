@@ -29,7 +29,7 @@ eventRouter.get("/", authRequired({ adminRequired: true }), async (req, res, nex
 
 eventRouter.post('/', authRequired(), async (req, res, next) => {
     try {
-        const response = await axios.post(`${process.env.API_MAIN_URL}/event`, req.body);
+        const response = await axios.post(`${process.env.API_MAIN_URL}/event`, {...req.body, owner_id: res.locals.tokenData.id});
 
         res.status(response.status).json(response.data);
     } catch (e) {
