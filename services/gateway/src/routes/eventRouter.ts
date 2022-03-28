@@ -7,8 +7,13 @@ import error405 from "../errors/error405";
 const eventRouter = express.Router();
 
 eventRouter.get("/", authRequired({ adminRequired: true }), async (req, res, next) => {
+    const params = new url.URLSearchParams();
+
+    if (req.query.participants) params.append("participants", req.query.participants as string);
+    if (req.query.embedOwner) params.append("embedOwner", req.query.embedOwner as string);
+
     try {
-        const response = await axios.get(`${process.env.API_MAIN_URL}/event`);
+        const response = await axios.get(`${process.env.API_MAIN_URL}/event`, { params });
         res.status(response.status).json(response.data);
     } catch (e) {
 
@@ -42,9 +47,13 @@ eventRouter.post('/', authRequired(), async (req, res, next) => {
 eventRouter.all("/", error405(["GET", "POST"]));
 
 eventRouter.get("/:id", async (req, res, next) => {
+    const params = new url.URLSearchParams();
+
+    if (req.query.participants) params.append("participants", req.query.participants as string);
+    if (req.query.embedOwner) params.append("embedOwner", req.query.embedOwner as string);
 
     try {
-        const response = await axios.get(`${process.env.API_MAIN_URL}/event/${req.params.id}`);
+        const response = await axios.get(`${process.env.API_MAIN_URL}/event/${req.params.id}`, { params });
 
         res.status(response.status).json(response.data);
     } catch (e) {
