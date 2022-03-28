@@ -35,7 +35,7 @@ inscriptionRouter.post("/", async (req, res, next) => {
     try {
       // @ts-ignore
       validateFieldsAuth.id = user.id;
-      const response = await axios.post(process.env.API_MAIN_URL + "/user", {...validateFieldsProfile, id: user.id});
+      const response = (await axios.post(process.env.API_MAIN_URL + "/user", {...validateFieldsProfile, id: user.id})).data;
 
       const token = jwt.sign(
         {
@@ -44,7 +44,17 @@ inscriptionRouter.post("/", async (req, res, next) => {
         },
         process.env.SECRETPASSWDTOKEN || "", { expiresIn: "1h" });
 
-        res.status(201).json({token, user: response.data});
+        res.status(201).json({ 
+          user: {
+            id: response.id,
+
+            isAdmin: user.isAdmin,
+
+            token,
+
+            username: response.username
+          }
+        });
     } catch (e) {
       user.destroy({ force: true });
 

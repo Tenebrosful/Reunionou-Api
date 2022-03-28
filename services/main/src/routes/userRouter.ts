@@ -43,7 +43,7 @@ userRouter.post("/", async (req, res, next) => {
       const user = await User.create({ ...userFields });
 
       if (user) 
-        res.status(201).send();
+        res.status(201).json(user);
       
     } catch (error) {
       next(error);
