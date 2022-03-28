@@ -23,7 +23,7 @@ eventRouter.get("/", authRequired({ adminRequired: true }), async (req, res, nex
 
 eventRouter.post('/', authRequired(), async (req, res, next) => {
     try {
-        const response = await axios.post(process.env.API_MAIN_URL + '/event/', req.body);
+        const response = await axios.post(`${process.env.API_MAIN_URL}/event`, req.body);
 
         res.status(response.status).json(response.data);
     } catch (e) {
@@ -41,7 +41,7 @@ eventRouter.post('/', authRequired(), async (req, res, next) => {
 eventRouter.get("/:id", async (req, res, next) => {
     
     try {
-        const response = await axios.get(process.env.API_MAIN_URL + '/event/' + req.params.id);
+        const response = await axios.get(`${process.env.API_MAIN_URL}/event/${req.params.id}`);
 
         res.status(response.status).json(response.data);
     } catch (e) {
@@ -59,7 +59,7 @@ eventRouter.get("/:id", async (req, res, next) => {
 eventRouter.get("/:id/participants", async (req, res, next) => {
     
     try {
-        const response = await axios.get(process.env.API_MAIN_URL + '/event/' + req.params.id + '/participants');
+        const response = await axios.get(`${process.env.API_MAIN_URL}/event/${req.params.id}/participants`);
 
         res.status(response.status).json(response.data);
     } catch (e) {
