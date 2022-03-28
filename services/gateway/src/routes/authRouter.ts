@@ -24,7 +24,7 @@ authRouter.post('/inscription', async (req, res, next) => {
 authRouter.post('/', async (req, res, next) => {
     try {
         const response = await axios.post(process.env.API_AUTH_URL + '/auth', req.body);
-
+        
         res.status(response.status).json(response.data);
     } catch (e) {
         

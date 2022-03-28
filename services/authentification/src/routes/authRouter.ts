@@ -12,14 +12,14 @@ import axios from "axios";
 const authRouter = express.Router();
 
 authRouter.post("/", async (req, res, next) => {
-    
+
     const userFields = {
         login: req.body.login,
         password: req.body.password,
     };
-    
+
     if (!handleDataValidation(AuthSchema, userFields, req, res, true)) return;
-    
+
     try {
         const userAccount = await UserAccount.findOne(
             {
@@ -36,8 +36,10 @@ authRouter.post("/", async (req, res, next) => {
 
         bcrypt.compare(userFields.password, userAccount.password, async function (err, result) {
             if (result) {
-                userAccount.update({last_connexion: Date.now()});
-                const response = await axios.post(process.env.API_MAIN_URL + '/user/' + userAccount.id, req.body);
+
+                userAccount.update({ last_connexion: Date.now() });
+                const response = await axios.get(process.env.API_MAIN_URL + '/user/' + userAccount.id);
+
                 const token = jwt.sign(
                     {
                         id: userAccount.id,
@@ -45,9 +47,17 @@ authRouter.post("/", async (req, res, next) => {
                         last_connexion: userAccount.last_connexion,
                     },
                     process.env.SECRETPASSWDTOKEN || "", { expiresIn: "2h" });
-                res.status(200).json({ token });
+                res.status(200).json({
+                    token,
+                    user: {
+                        // @ts-ignore
+                        id: userAccount.id,
+                        // @ts-ignore
+                        username: response.data.username
+                    }
+                });
             } else {
-                error401(req, res, "Combinaison identifiant mot de passe invalide"); // ou ici
+                error401(req, res, "Combinaison identifiant mot de passe invalide ici"); // ou ici
                 return;
             }
         });
@@ -58,7 +68,7 @@ authRouter.post("/", async (req, res, next) => {
 
 });
 
-authRouter.all("/", error405(["POST"]));
+authRouter.all("/", error405(["POST", "PATCH"]));
 
 authRouter.post("/tokenverify", async (req, res, next) => {
 
@@ -79,7 +89,7 @@ authRouter.post("/tokenverify", async (req, res, next) => {
     try {
         const user = await UserAccount.findOne(
             {
-                attributes: [ "id" ],
+                attributes: ["id"],
                 // @ts-ignore
                 where: { id: tokenData.id }
 

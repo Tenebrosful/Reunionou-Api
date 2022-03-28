@@ -56,7 +56,7 @@ userRouter.get("/:id", async (req, res, next) => {
   try {
     const user = await User.findOne(
       {
-        attributes: ["id", "username", "default_event_mail", "last_connexion", "createdAt", "updatedAt"],
+        attributes: ["id", "username", "default_event_mail", "createdAt", "updatedAt"],
         where: {
           id: req.params.id
         }
