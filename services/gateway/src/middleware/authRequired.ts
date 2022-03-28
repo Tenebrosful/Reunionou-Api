@@ -12,13 +12,11 @@ export default function authRequired(options: { adminRequired?: boolean, userId?
         try {
             await axios.post(`${process.env.API_AUTH_URL}/auth/tokenVerify`, {}, { headers: { authorization: "" + res.locals.token } });
 
-            const tokenData = jwt.decode(res.locals.token);
+            res.locals.tokenData = jwt.decode(res.locals.token);
 
-            // @ts-ignore
-            if (options.adminRequired && !tokenData?.isAdmin) error403(req, res);
+            if (options.adminRequired && !res.locals.tokenData?.isAdmin) { error403(req, res); return; }
 
-            // @ts-ignore
-            if (!tokenData?.isAdmin && options.userId && options.userId !== tokenData?.userId) { error403(req, res); return; }
+            if (!res.locals.tokenData?.isAdmin && options.userId && options.userId !== res.locals.tokenData.id) { error403(req, res); return; }
 
             next();
         } catch (error) {
