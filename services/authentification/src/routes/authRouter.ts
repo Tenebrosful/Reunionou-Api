@@ -38,24 +38,34 @@ authRouter.post("/", async (req, res, next) => {
             if (result) {
 
                 userAccount.update({ last_connexion: Date.now() });
-                const response = await axios.get(process.env.API_MAIN_URL + '/user/' + userAccount.id);
+                try {
+                    const response = await axios.get(process.env.API_MAIN_URL + '/user/' + userAccount.id);
 
-                const token = jwt.sign(
-                    {
-                        id: userAccount.id,
-                        isAdmin: userAccount.isAdmin,
-                        last_connexion: userAccount.last_connexion,
-                    },
-                    process.env.SECRETPASSWDTOKEN || "", { expiresIn: "2h" });
-                res.status(200).json({
-                    token,
-                    user: {
+                    const token = jwt.sign(
+                        {
+                            id: userAccount.id,
+                            isAdmin: userAccount.isAdmin,
+                            last_connexion: userAccount.last_connexion,
+                        },
+                        process.env.SECRETPASSWDTOKEN || "", { expiresIn: "2h" });
+                    res.status(200).json({
+                        token,
+                        user: {
+                            // @ts-ignore
+                            id: userAccount.id,
+                            // @ts-ignore
+                            username: response.data.username
+                        }
+                    });
+                } catch (e) {
+                    // @ts-ignore
+                    if (e.isAxiosError && e.response && e.response.status !== 500) {
                         // @ts-ignore
-                        id: userAccount.id,
-                        // @ts-ignore
-                        username: response.data.username
+                        res.status(e.response.status).json(e.response.data); return;
                     }
-                });
+
+                    next(e);
+                }
             } else {
                 error401(req, res, "Combinaison identifiant mot de passe invalide ici"); // ou ici
                 return;

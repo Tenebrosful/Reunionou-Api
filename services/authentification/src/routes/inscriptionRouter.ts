@@ -47,6 +47,13 @@ inscriptionRouter.post("/", async (req, res, next) => {
         res.status(201).json({token, user: response.data});
     } catch (e) {
       user.destroy({ force: true });
+
+      // @ts-ignore
+      if(e.isAxiosError && e.response && e.response.status !== 500) {
+        // @ts-ignore
+        res.status(e.response.status).json(e.response.data); return;
+    }
+
       next(e);
     }
   } catch (e) { next(e); }
