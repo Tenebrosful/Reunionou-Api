@@ -35,7 +35,7 @@ inscriptionRouter.post("/", async (req, res, next) => {
     try {
       // @ts-ignore
       validateFieldsAuth.id = user.id;
-      const response = await axios.post(process.env.API_MAIN_URL + "/user", validateFieldsProfile);
+      const response = await axios.post(process.env.API_MAIN_URL + "/user", {...validateFieldsProfile, id: user.id});
 
       const token = jwt.sign(
         {
