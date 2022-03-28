@@ -38,6 +38,8 @@ eventRouter.post('/', authRequired(), async (req, res, next) => {
     }
 });
 
+eventRouter.all("/", error405(["GET", "POST"]));
+
 eventRouter.get("/:id", async (req, res, next) => {
     
     try {
@@ -56,6 +58,8 @@ eventRouter.get("/:id", async (req, res, next) => {
     }
 });
 
+eventRouter.all("/:id", error405(["GET"]));
+
 eventRouter.get("/:id/participants", async (req, res, next) => {
     
     try {
@@ -73,6 +77,8 @@ eventRouter.get("/:id/participants", async (req, res, next) => {
         next(e);
     }
 });
+
+eventRouter.all("/:id/participants", error405(["GET"]));
 
 eventRouter.get("/:id/comments", async (req, res, next) => {
     let option = '';
@@ -94,5 +100,7 @@ eventRouter.get("/:id/comments", async (req, res, next) => {
         next(e);
     }
 });
+
+eventRouter.all("/:id/comments", error405(["GET"]));
 
 export default eventRouter;
