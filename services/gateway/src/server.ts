@@ -9,6 +9,7 @@ import error500 from "./errors/error500";
 import authRouter from "./routes/authRouter";
 import eventRouter from "./routes/eventRouter";
 import userRouter from "./routes/userRouter";
+import commentRouter from "./routes/commentRouter";
 
 
 const app = express();
@@ -34,6 +35,7 @@ app.all("/api", (req, res) => {
 app.use("/api/auth", authRouter);
 app.use("/api/event", eventRouter);
 app.use("/api/user", userRouter);
+app.use("/api/comment", commentRouter);
 
 /**
  * Handle Errors

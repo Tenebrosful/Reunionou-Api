@@ -34,6 +34,7 @@ export interface iallComments {
 export interface icomment {
   id: string,
   event_id: string,
+  event?: ievent | null,
   author_id: string,
   author?: Omit<iuser,"last_connexion" | "default_event_mail"> | null,
   message: string,
