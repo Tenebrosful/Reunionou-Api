@@ -7,8 +7,6 @@ export default function authRequired(options: { adminRequired?: boolean, userId?
     return async (req: Request, res: Response, next: NextFunction) => {
         if (!req.headers["authorization"]) { error401(req, res, "Header 'Autorization' requis"); return; }
 
-        console.log(options);
-
         res.locals.token = req.headers["authorization"];
 
         try {
