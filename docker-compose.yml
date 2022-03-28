@@ -5,6 +5,7 @@ services:
     image: adminer:4
     ports:
       - ${EXPOSED_ADMINER_PORT}:8080
+    command: php -S 0.0.0.0:8080 -t /var/www/html
     networks:
       - Reunionou_api
   
