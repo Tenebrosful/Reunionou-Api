@@ -1,8 +1,25 @@
 import * as express from "express";
 import axios from "axios";
 import authRequired from "../middleware/authRequired";
+import error405 from "../errors/error405";
 
 const eventRouter = express.Router();
+
+eventRouter.get("/", authRequired({ adminRequired: true }), async (req, res, next) => {
+    try {
+        const response = await axios.get(`${process.env.API_MAIN_URL}/event`);
+        res.status(response.status).json(response.data);
+    } catch (e) {
+
+        // @ts-ignore
+        if (e.isAxiosError && e.response && e.response.status !== 500) {
+            // @ts-ignore
+            res.status(e.response.status).json(e.response.data); return;
+        }
+
+        next(e);
+    }
+});
 
 eventRouter.post('/', authRequired(), async (req, res, next) => {
     try {
