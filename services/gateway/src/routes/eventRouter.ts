@@ -1,4 +1,5 @@
 import * as express from "express";
+import * as url from "url";
 import axios from "axios";
 import authRequired from "../middleware/authRequired";
 import error405 from "../errors/error405";
@@ -81,12 +82,12 @@ eventRouter.get("/:id/participants", async (req, res, next) => {
 eventRouter.all("/:id/participants", error405(["GET"]));
 
 eventRouter.get("/:id/comments", async (req, res, next) => {
-    let option = '';
+    const params = new url.URLSearchParams();
 
-    if (req.query.embedAuthor) option = '?embedAuthor=true';
+    if (req.query.embedAuthor) params.append("embedAuthor", req.query.embedAuthor as string);
 
     try {
-        const response = await axios.get(process.env.API_MAIN_URL + '/event/' + req.params.id + '/comments' + option);
+        const response = await axios.get(`${process.env.API_MAIN_URL}/event/${req.params.id}/comments`, { params });
 
         res.status(response.status).json(response.data);
     } catch (e) {
