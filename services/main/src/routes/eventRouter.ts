@@ -1,12 +1,14 @@
 import * as express from "express";
+import { Comment } from "../../../../databases/main/models/Comment";
 import { Event } from "../../../../databases/main/models/Event";
 import { User } from "../../../../databases/main/models/User";
 import error404 from "../errors/error404";
 import error405 from "../errors/error405";
 import error422 from "../errors/error422";
 import handleDataValidation from "../middleware/handleDataValidation";
-import { iNewEvent } from "../requestInterface/eventRequest";
+import { iNewComment, iNewEvent } from "../requestInterface/eventRequest";
 import { iallComments, iallEvents, iallParticipants, icomment, ievent } from "../responseInterface/eventResponse";
+import commentSchema from "../validationSchema/commentSchema";
 import eventSchema from "../validationSchema/eventSchema";
 
 const eventRouter = express.Router();
@@ -338,6 +340,48 @@ eventRouter.get("/:id/comments", async (req, res, next) => {
 
 });
 
-eventRouter.all("/:id/comments", error405(["GET"]));
+eventRouter.post("/:id/comments", async (req, res, next) => {
+  const requestFields: iNewComment = {
+    author_id: req.body.author_id,
+    message: req.body.message,
+  };
+
+  if (!handleDataValidation(commentSchema, requestFields, req, res, true)) return;
+
+  const validedFields = {
+    message: requestFields.message,
+    user_id: requestFields.author_id,
+  };
+
+  try {
+    const event = await Event.findOne(
+      {
+        attributes: ["id", "title", "description", "address", "lat", "long", "owner_id", "createdAt", "updatedAt"],
+        where: {
+          id: req.params.id
+        }
+      });
+
+    if (!event) { error404(req, res, `L'évènement '${req.params.id}' est introuvable. (Potentiellement soft-delete)`); return; }
+
+    const comment = await Comment.create({...validedFields, event_id: event.id});
+
+    if (!comment) return;
+
+    const resData: icomment = {
+      author_id: comment.user_id,
+      createdAt: comment.createdAt,
+      event_id: comment.event_id,
+      id: comment.id,
+      message: comment.message,
+      updatedAt: comment.updatedAt,
+    };
+
+    res.status(201).json(resData);
+
+  } catch (e) { next(e); }
+});
+
+eventRouter.all("/:id/comments", error405(["GET", "POST"]));
 
 export default eventRouter;
