@@ -1,4 +1,5 @@
 import axios from "axios";
+import * as url from "url";
 import * as express from "express";
 import error405 from "../errors/error405";
 import authRequired from "../middleware/authRequired";
@@ -23,8 +24,13 @@ userRouter.get("/", authRequired({ adminRequired: true }), async (req, res, next
 userRouter.all("/", error405(["GET"]));
 
 userRouter.get("/:id/joined-event", async (req, res, next) => {
+  const params = new url.URLSearchParams();
+
+  if (req.query.participants) params.append("participants", req.query.participants as string);
+  if (req.query.embedOwner) params.append("embedOwner", req.query.embedOwner as string);
+
   try {
-    const response = await axios.get(`${process.env.API_MAIN_URL}/user/${req.params.id}/joined-event`);
+    const response = await axios.get(`${process.env.API_MAIN_URL}/user/${req.params.id}/joined-event`, { params });
     res.status(response.status).json(response.data);
   } catch (e) {
 
