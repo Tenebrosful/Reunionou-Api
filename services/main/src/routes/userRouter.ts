@@ -10,7 +10,7 @@ userRouter.get("/", async (req, res, next) => {
   try {
     const { count, rows: users } = await User.findAndCountAll(
       {
-        attributes: ["id", "username", "default_event_mail", "last_connexion", "createdAt", "updatedAt"]
+        attributes: ["id", "username", "default_event_mail", "createdAt", "updatedAt"]
       });
 
     const result: iallUsers = {
