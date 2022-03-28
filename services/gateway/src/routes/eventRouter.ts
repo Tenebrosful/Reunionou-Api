@@ -3,6 +3,7 @@ import * as url from "url";
 import axios from "axios";
 import authRequired from "../middleware/authRequired";
 import error405 from "../errors/error405";
+import verifyEventOwner from "../middleware/verifyEventOwner";
 
 const eventRouter = express.Router();
 
@@ -68,7 +69,24 @@ eventRouter.get("/:id", async (req, res, next) => {
     }
 });
 
-eventRouter.all("/:id", error405(["GET"]));
+eventRouter.delete("/:id", authRequired(), verifyEventOwner , async (req, res, next) => {
+    try {
+        const response = await axios.delete(`${process.env.API_MAIN_URL}/event/${req.params.id}`);
+
+        res.status(response.status).json(response.data);
+    } catch (e) {
+
+        // @ts-ignore
+        if (e.isAxiosError && e.response && e.response.status !== 500) {
+            // @ts-ignore
+            res.status(e.response.status).json(e.response.data); return;
+        }
+
+        next(e);
+    }
+});
+
+eventRouter.all("/:id", error405(["GET", "DELETE"]));
 
 eventRouter.get("/:id/participants", async (req, res, next) => {
 
