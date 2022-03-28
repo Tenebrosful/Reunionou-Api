@@ -3,9 +3,11 @@ import { NextFunction, Request, Response } from 'express';
 import * as jwt from "jsonwebtoken";
 import error401 from '../errors/error401';
 import error403 from '../errors/error403';
-export default function authRequired(adminRequired = false) {
+export default function authRequired(options: { adminRequired?: boolean, userId?: string } = { adminRequired: false, userId: undefined }) {
     return async (req: Request, res: Response, next: NextFunction) => {
         if (!req.headers["authorization"]) { error401(req, res, "Header 'Autorization' requis"); return; }
+
+        console.log(options);
 
         res.locals.token = req.headers["authorization"];
 
@@ -15,7 +17,10 @@ export default function authRequired(adminRequired = false) {
             const tokenData = jwt.decode(res.locals.token);
 
             // @ts-ignore
-            if (adminRequired && !tokenData?.isAdmin) error403(req, res);
+            if (options.adminRequired && !tokenData?.isAdmin) error403(req, res);
+
+            // @ts-ignore
+            if (!tokenData?.isAdmin && options.userId && options.userId !== tokenData?.userId) { error403(req, res); return; }
 
             next();
         } catch (error) {
