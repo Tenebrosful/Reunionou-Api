@@ -84,6 +84,6 @@ userRouter.delete("/:id", async (req, res, next) => {
   }
 });
 
-userRouter.all("/:id", error405(["GET"]));
+userRouter.all("/:id", error405(["GET", "DELETE"]));
 
 export default userRouter;
