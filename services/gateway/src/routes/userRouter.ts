@@ -77,7 +77,7 @@ userRouter.delete("/:id", authRequired({ selfUserIdRequired: true }), async (req
   }
 });
 
-userRouter.all("/:id", error405(["GET"]));
+userRouter.all("/:id", error405(["GET", "DELETE"]));
 
 userRouter.get("/:id/account", authRequired({ selfUserIdRequired: true }), async (req, res, next) => {
   try {
