@@ -9,6 +9,7 @@ import error400 from "./errors/error400";
 import error500 from "./errors/error500";
 import inscriptionRouter from "./routes/inscriptionRouter";
 import authRouter from "./routes/authRouter";
+import userRouter from "./routes/userRouter";
 
 const app = express();
 const port = process.env.EXPRESS_PORT || 3000;
@@ -33,6 +34,7 @@ app.all("/api", (req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/inscription", inscriptionRouter);
+app.use("/api/user", userRouter);
 
 /**
  * Handle Errors
