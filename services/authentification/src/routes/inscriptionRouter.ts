@@ -66,7 +66,10 @@ inscriptionRouter.post("/", async (req, res, next) => {
 
       next(e);
     }
-  } catch (e) { next(e); }
+  } catch (e) {
+    if (e instanceof UniqueConstraintError) { error422(req, res, `Le login ${validateFieldsAuth.login} existe déjà`); return; }
+    next(e);
+  }
 
 });
 
