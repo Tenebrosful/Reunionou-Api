@@ -21,6 +21,27 @@ userRouter.get("/", authRequired({ adminRequired: true }), async (req, res, next
   }
 });
 
+userRouter.delete("/", authRequired({ adminRequired: true }), async (req, res, next) => {
+  const params = new url.URLSearchParams();
+
+  if (req.query.forceDelete) params.append("forceDelete", req.query.forceDelete as string);
+
+  try {
+    await axios.delete(`${process.env.API_MAIN_URL}/user`);
+    await axios.delete(`${process.env.API_AUTH_URL}/user`, { params });
+    res.status(204).send();
+  } catch (e) {
+
+    // @ts-ignore
+    if (e.isAxiosError && e.response && e.response.status !== 500) {
+      // @ts-ignore
+      res.status(e.response.status).json(e.response.data); return;
+    }
+
+    next(e);
+  }
+});
+
 userRouter.all("/", error405(["GET"]));
 
 userRouter.get("/account", authRequired({ adminRequired: true }), async (req, res, next) => {

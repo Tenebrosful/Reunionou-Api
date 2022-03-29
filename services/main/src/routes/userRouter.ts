@@ -1,4 +1,5 @@
 import * as express from "express";
+import { Op } from "sequelize";
 import { User } from "../../../../databases/main/models/User";
 import error404 from "../errors/error404";
 import error405 from "../errors/error405";
@@ -31,6 +32,21 @@ userRouter.get("/", async (req, res, next) => {
 
 });
 
+userRouter.delete("/", async (req, res, next) => {
+  try {
+    await User.destroy({
+      force: true,
+      where: {
+        deletedAt: {
+          [Op.not]: null
+        }
+      }
+    });
+
+    res.status(204).send();
+  } catch (e) { next(e); }
+});
+
 userRouter.post("/", async (req, res, next) => {
 
   const userFields = {
@@ -39,18 +55,18 @@ userRouter.post("/", async (req, res, next) => {
     username: req.body.username,
   };
 
-    try {
-      const user = await User.create({ ...userFields });
+  try {
+    const user = await User.create({ ...userFields });
 
-      if (user) 
-        res.status(201).json(user);
-      
-    } catch (error) {
-      next(error);
-    }
+    if (user)
+      res.status(201).json(user);
+
+  } catch (error) {
+    next(error);
+  }
 });
 
-userRouter.all("/", error405(["GET", "POST"]));
+userRouter.all("/", error405(["GET", "DELETE", "POST"]));
 
 userRouter.get("/:id", async (req, res, next) => {
   try {
@@ -87,9 +103,9 @@ userRouter.delete("/:id", async (req, res, next) => {
       });
 
     if (!isDeleted) { error404(req, res, `L'utilisateur '${req.params.id}' est introuvable. (Potentiellement soft-delete)`); return; }
-
     res.status(204).send();
-  } catch (e) { next(e); }
+  } catch (e) { 
+    next(e); }
 });
 
 userRouter.all("/:id", error405(["GET", "DELETE"]));

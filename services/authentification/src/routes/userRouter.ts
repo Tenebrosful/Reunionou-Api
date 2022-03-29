@@ -1,5 +1,6 @@
 import axios from "axios";
 import * as express from "express";
+import { Op } from "sequelize";
 import { UserAccount } from "../../../../databases/authentification/models/UserAccount";
 import error404 from "../errors/error404";
 import error405 from "../errors/error405";
@@ -31,6 +32,41 @@ userRouter.get("/", async (req, res, next) => {
 
     res.status(200).json(result);
 
+  } catch (e) { next(e); }
+});
+
+userRouter.delete("/", async (req, res, next) => {
+  try {
+    await UserAccount.destroy({
+      force: true,
+      where: {
+        deletedAt: {
+          [Op.not]: null
+        }
+      }
+    });
+
+    const inactifsusers = await UserAccount.findAll({
+      where: {
+        last_connexion: {
+          [Op.lte]: new Date(new Date().getTime() - (1000 * 60 * 60 * 24 * 30))
+        }
+      }
+    });
+
+    const promises = inactifsusers.map(async user => {
+      user.destroy({force: req.query.forceDelete === "true"});
+
+      try {
+        await axios.delete(`${process.env.API_MAIN_URL}/user/${user.id}${req.query.forceDelete === "true" ? "?forceDelete=true" : ""}`);
+      } catch (e) {
+        user.restore();
+      }
+    });
+
+    await Promise.all(promises);
+
+    res.status(204).send();
   } catch (e) { next(e); }
 });
 
