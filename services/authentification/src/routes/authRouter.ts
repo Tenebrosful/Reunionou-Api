@@ -48,6 +48,9 @@ authRouter.post("/", async (req, res, next) => {
                             last_connexion: userAccount.last_connexion,
                         },
                         process.env.SECRETPASSWDTOKEN || "", { expiresIn: "2h" });
+
+                    userAccount.update({last_connexion: Date.now()});
+
                     res.status(200).json({
                         user: {
                             id: userAccount.id,
@@ -109,6 +112,8 @@ authRouter.post("/tokenverify", async (req, res, next) => {
             error404(req, res, "Token invalide");
             return;
         }
+
+        user.update({ last_connexion: Date.now() });
 
         res.status(200).send();
 
