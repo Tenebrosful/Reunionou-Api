@@ -50,16 +50,10 @@ authRouter.post("/", async (req, res, next) => {
                         process.env.SECRETPASSWDTOKEN || "", { expiresIn: "2h" });
                     res.status(200).json({
                         user: {
-                            // @ts-ignore
                             id: userAccount.id,
-
-                            // @ts-ignore
                             isAdmin: userAccount.isAdmin,
-
                             token,
-                            // @ts-ignore
                             username: response.data.username,
-
                         }
                     });
                 } catch (e) {
