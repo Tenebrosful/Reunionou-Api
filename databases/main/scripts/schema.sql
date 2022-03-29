@@ -64,6 +64,8 @@ CREATE TABLE `userevent` (
   `createdAt` datetime NOT NULL DEFAULT current_timestamp(),
   `updatedAt` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `deletedAt` datetime DEFAULT NULL,
+  UNIQUE KEY `user_id_unique` (`user_id`),
+  UNIQUE KEY `username` (`username`),
   KEY `event_id` (`event_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `userevent_ibfk_10` FOREIGN KEY (`event_id`) REFERENCES `event` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -71,4 +73,4 @@ CREATE TABLE `userevent` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
--- 2022-03-29 12:54:20
+-- 2022-03-29 13:24:39
