@@ -218,4 +218,6 @@ commentRouter.get("/:id", async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
+commentRouter.all("/:id", error405(["GET"]));
+
 export default commentRouter;
