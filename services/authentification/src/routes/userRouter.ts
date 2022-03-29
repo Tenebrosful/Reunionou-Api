@@ -3,6 +3,7 @@ import * as express from "express";
 import { UserAccount } from "../../../../databases/authentification/models/UserAccount";
 import error404 from "../errors/error404";
 import error405 from "../errors/error405";
+import error422 from "../errors/error422";
 import { iAllUserAccount, iUserAccount } from "../responseInterface/userResponse";
 const userRouter = express.Router();
 
@@ -85,5 +86,38 @@ userRouter.delete("/:id", async (req, res, next) => {
 });
 
 userRouter.all("/:id", error405(["GET", "DELETE"]));
+
+userRouter.post("/:id/restore", async (req, res, next) => {
+  try {
+    const user = await UserAccount.findOne(
+      {
+        attributes: ["id", "deletedAt"],
+        paranoid: false,
+        where: {
+          id: req.params.id
+        },
+      });
+
+    if (!user) { error404(req, res, `L'utilisateur '${req.params.id}' est introuvable.`); return; }
+    if (user.deletedAt === null) { error422(req, res, `L'utilisateur '${req.params.id}' n'est pas supprimé.`); return; }
+
+    await user.restore();
+  } catch (e) { next(e); }
+
+  try {
+    await axios.post(`${process.env.API_MAIN_URL}/user/${req.params.id}/restore`);
+    res.status(204).send();
+  } catch (e) {
+    await UserAccount.destroy({ where: { id: req.params.id } });
+
+    // @ts-ignore
+    if (e.isAxiosError && e.response && e.response.status !== 500) {
+      // @ts-ignore
+      res.status(e.response.status).json(e.response.data); return;
+    }
+
+    next(e);
+  }
+});
 
 export default userRouter;

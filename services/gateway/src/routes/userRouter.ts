@@ -79,6 +79,24 @@ userRouter.delete("/:id", authRequired({ selfUserIdRequired: true }), async (req
 
 userRouter.all("/:id", error405(["GET", "DELETE"]));
 
+userRouter.post("/:id/restore", authRequired({ selfUserIdRequired: true }), async (req, res, next) => {
+  try {
+    const response = await axios.post(`${process.env.API_AUTH_URL}/user/${req.params.id}/restore`);
+    res.status(response.status).json(response.data);
+  } catch (e) {
+
+    // @ts-ignore
+    if (e.isAxiosError && e.response && e.response.status !== 500) {
+      // @ts-ignore
+      res.status(e.response.status).json(e.response.data); return;
+    }
+
+    next(e);
+  }
+});
+
+userRouter.all("/:id/restore", error405(["POST"]));
+
 userRouter.get("/:id/account", authRequired({ selfUserIdRequired: true }), async (req, res, next) => {
   try {
     const response = await axios.get(`${process.env.API_AUTH_URL}/user/${req.params.id}`);
