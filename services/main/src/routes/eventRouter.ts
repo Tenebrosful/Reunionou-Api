@@ -288,7 +288,7 @@ eventRouter.all("/:id/participants", error405(["GET"]));
 eventRouter.post("/:id/join-event", async (req, res, next) => {
 
   const participantFields = {
-    comeToEvent: req.body.comeToEvent,
+    comeToEvent: req.body.comeToEvent || false,
     event_id: req.params.id,
     user_id: req.body.user_id,
     username: req.body.username,
