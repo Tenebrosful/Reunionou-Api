@@ -16,8 +16,9 @@ CREATE TABLE `userAccount` (
   `last_connexion` datetime NOT NULL DEFAULT current_timestamp(),
   `createdAt` datetime NOT NULL DEFAULT current_timestamp(),
   `updatedAt` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `deletedAt` datetime DEFAULT NULL
+  `deletedAt` datetime DEFAULT NULL,
+  UNIQUE KEY `login` (`login`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
--- 2022-03-28 13:23:12
+-- 2022-03-29 11:29:35
