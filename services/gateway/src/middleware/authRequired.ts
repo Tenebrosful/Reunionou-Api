@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import * as jwt from "jsonwebtoken";
 import error401 from '../errors/error401';
 import error403 from '../errors/error403';
-export default function authRequired(options: { adminRequired?: boolean, userId?: string } = { adminRequired: false, userId: undefined }) {
+export default function authRequired(options: { adminRequired?: boolean, selfUserIdRequired?: boolean } = { adminRequired: false, selfUserIdRequired: false }) {
     return async (req: Request, res: Response, next: NextFunction) => {
         if (!req.headers["authorization"]) { error401(req, res, "Header 'Autorization' requis"); return; }
 
@@ -16,7 +16,7 @@ export default function authRequired(options: { adminRequired?: boolean, userId?
 
             if (options.adminRequired && !res.locals.tokenData?.isAdmin) { error403(req, res); return; }
 
-            if (!res.locals.tokenData?.isAdmin && options.userId && options.userId !== res.locals.tokenData.id) { error403(req, res); return; }
+            if (!res.locals.tokenData?.isAdmin && options.selfUserIdRequired && req.params.id !== res.locals.tokenData.id) { error403(req, res); return; }
 
             next();
         } catch (error) {
