@@ -2,6 +2,19 @@
 
 *Atelier du 21/03/2022 au 30/03/2022*
 
+## Configuration des fichiers d'envirronement
+
+### `.env` du docker-compose à la racine du projet
+
+```env
+EXPOSED_ADMINER_PORT=
+EXPOSED_GATEWAY_API_PORT=
+```
+
+### Autres fichiers d'envirronement
+
+[Voir le dossier config](./config/README.md)
+
 ## Adresse de déployement
 
 - http://docketu.iutnc.univ-lorraine.fr:62460
