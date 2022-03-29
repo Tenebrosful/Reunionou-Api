@@ -106,6 +106,44 @@ eventRouter.get("/:id/participants", async (req, res, next) => {
     }
 });
 
+eventRouter.post("/:id/join-event/auth", authRequired(), async (req, res, next) => {
+
+    try {
+        const response = await axios.post(`${process.env.API_MAIN_URL}/event/${req.params.id}/join-event`, {...req.body, user_id: res.locals.tokenData.id});
+
+        res.status(response.status).json(response.data);
+    } catch (e) {
+
+        // @ts-ignore
+        if (e.isAxiosError && e.response && e.response.status !== 500) {
+            // @ts-ignore
+            res.status(e.response.status).json(e.response.data); return;
+        }
+
+        next(e);
+    }
+
+});
+
+eventRouter.post("/:id/join-event", async (req, res, next) => {
+
+    try {
+        const response = await axios.post(`${process.env.API_MAIN_URL}/event/${req.params.id}/join-event`, req.body);
+
+        res.status(response.status).json(response.data);
+    } catch (e) {
+
+        // @ts-ignore
+        if (e.isAxiosError && e.response && e.response.status !== 500) {
+            // @ts-ignore
+            res.status(e.response.status).json(e.response.data); return;
+        }
+
+        next(e);
+    }
+
+});
+
 eventRouter.all("/:id/participants", error405(["GET"]));
 
 eventRouter.get("/:id/comments", async (req, res, next) => {

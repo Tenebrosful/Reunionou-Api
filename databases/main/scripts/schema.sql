@@ -57,8 +57,9 @@ CREATE TABLE `user` (
 
 DROP TABLE IF EXISTS `userevent`;
 CREATE TABLE `userevent` (
-  `user_id` varchar(128) NOT NULL,
+  `user_id` varchar(128) DEFAULT NULL,
   `event_id` varchar(128) NOT NULL,
+  `username` varchar(128) DEFAULT NULL,
   `comeToEvent` tinyint(4) NOT NULL DEFAULT 0,
   `createdAt` datetime NOT NULL DEFAULT current_timestamp(),
   `updatedAt` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
@@ -70,4 +71,4 @@ CREATE TABLE `userevent` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
--- 2022-03-25 12:01:15
+-- 2022-03-29 12:54:20

@@ -2,6 +2,7 @@ import * as express from "express";
 import { Comment } from "../../../../databases/main/models/Comment";
 import { Event } from "../../../../databases/main/models/Event";
 import { User } from "../../../../databases/main/models/User";
+import { UserEvent } from "../../../../databases/main/models/UserEvent";
 import error404 from "../errors/error404";
 import error405 from "../errors/error405";
 import error422 from "../errors/error422";
@@ -283,6 +284,37 @@ eventRouter.get("/:id/participants", async (req, res, next) => {
 });
 
 eventRouter.all("/:id/participants", error405(["GET"]));
+
+eventRouter.post("/:id/join-event", async (req, res, next) => {
+
+  const participantFields = {
+    comeToEvent: req.body.comeToEvent,
+    event_id: req.params.id,
+    user_id: req.body.user_id,
+    username: req.body.username,
+  };
+
+  try {
+
+    const event = await Event.findOne(
+      {
+        attributes: ["id"],
+        where: {
+          id: req.params.id
+        }
+      });
+
+
+    if (!event) { error404(req, res, `L'évènement '${req.params.id}' est introuvable. (Potentiellement soft-delete)`); return; }
+
+    const [eventParticipant, created]  = await UserEvent.upsert({...participantFields});
+
+    if(created) res.status(201).json(eventParticipant.toJSON());
+    else res.status(200).send();
+  
+  } catch (e) { next(e); }
+
+});
 
 eventRouter.get("/:id/comments", async (req, res, next) => {
   try {
