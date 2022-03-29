@@ -13,7 +13,7 @@ services:
     container_name: Reunionou_api_db_main_g5_v2
     image: mariadb:latest
     env_file:
-      - ./databases/main/config/bdd.env
+      - ./config/main-bdd.env
     volumes:
       - ./databases/data/main:/var/lib/mysql
       - ./databases/main/scripts/schema.sql:/docker-entrypoint-initdb.d/1.sql
@@ -25,7 +25,7 @@ services:
     container_name: Reunionou_api_db_auth_g5_v2
     image: mariadb:latest
     env_file:
-      - ./databases/authentification/config/bdd.env
+      - ./config/auth-bdd.env
     volumes:
       - ./databases/data/auth:/var/lib/mysql
       - ./databases/authentification/scripts/schema.sql:/docker-entrypoint-initdb.d/1.sql
@@ -41,7 +41,7 @@ services:
       links:
         - Reunionou_api_db_main_g5_v2
       env_file:
-        - ./databases/main/config/bdd.env
+        - ./config/main-bdd.env
       working_dir: /usr/src/app
       volumes:
         - ./tsconfig.json:/usr/src/app/tsconfig.json
@@ -63,8 +63,8 @@ services:
         - Reunionou_api_main_g5_v2
         - Reunionou_api_db_auth_g5_v2
       env_file:
-        - ./databases/authentification/config/bdd.env
-        - ./services/authentification/.env
+        - ./config/auth-bdd.env
+        - ./config/auth.env
       working_dir: /usr/src/app
       volumes:
         - ./tsconfig.json:/usr/src/app/tsconfig.json
@@ -84,7 +84,7 @@ services:
         - Reunionou_api_main_g5_v2
         - Reunionou_api_auth_g5_v2
       env_file:
-        - ./services/gateway/.env
+        - ./config/gateway.env
       working_dir: /usr/src/app
       volumes:
         - ./tsconfig.json:/usr/src/app/tsconfig.json
