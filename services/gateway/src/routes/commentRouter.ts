@@ -53,6 +53,26 @@ commentRouter.get("/:id", async (req, res, next) => {
   }
 });
 
+commentRouter.delete("/:id", authRequired({selfUserIdRequired: true}) , async (req, res, next) => {
+  const params = new url.URLSearchParams();
+
+  if(req.query.forceDelete) params.append("forceDelete", req.query.forceDelete as string);
+
+  try {
+    const comment = await axios.delete(`${process.env.API_MAIN_URL}/comment/${req.params.id}`, { params });
+    res.status(comment.status).json(comment.data);
+  } catch (e) {
+
+    // @ts-ignore
+    if (e.isAxiosError && e.response && e.response.status !== 500) {
+      // @ts-ignore
+      res.status(e.response.status).json(e.response.data); return;
+    }
+
+    next(e);
+  }
+});
+
 commentRouter.all("/:id", error405(["GET"]));
 
 export default commentRouter;

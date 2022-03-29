@@ -218,6 +218,21 @@ commentRouter.get("/:id", async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
+commentRouter.delete("/:id", async (req, res, next) => {
+  try {
+    const comment = await Comment.findOne({
+      attributes: ["id", "user_id", "event_id", "message", "createdAt", "updatedAt"],
+      where: { id: req.params.id },
+    });
+
+    if (!comment) { error404(req, res, `Commentaire ${req.params.id} introuvable`); return; }
+
+    await comment.destroy({ force: req.query.forceDelete === "true" });
+
+    res.status(204).send();
+  } catch (e) { next(e); }
+});
+
 commentRouter.all("/:id", error405(["GET"]));
 
 export default commentRouter;
