@@ -10,6 +10,7 @@ commentRouter.get("/", authRequired({ adminRequired: true }), async (req, res, n
 
   if (req.query.embedAuthor) params.append("embedAuthor", req.query.embedAuthor as string);
   if (req.query.embedEvent) params.append("embedEvent", req.query.embedEvent as string);
+  if (req.query.embedOwner) params.append("embedOwner", req.query.embedOwner as string);
   if (req.query.participants) params.append("participants", req.query.participants as string);
 
   try {
