@@ -80,6 +80,7 @@ userRouter.delete("/:id", async (req, res, next) => {
   try {
     const isDeleted = await User.destroy(
       {
+        force: req.query.forceDelete === "true",
         where: {
           id: req.params.id
         }

@@ -1,3 +1,4 @@
+import axios from "axios";
 import * as express from "express";
 import { UserAccount } from "../../../../databases/authentification/models/UserAccount";
 import error404 from "../errors/error404";
@@ -55,6 +56,32 @@ userRouter.get("/:id", async (req, res, next) => {
     res.status(200).json(result);
 
   } catch (e) { next(e); }
+});
+
+userRouter.delete("/:id", async (req, res, next) => {
+  try {
+    const isDeleted = await UserAccount.destroy({
+      force: req.query.forceDelete === "true",
+      where: { id: req.params.id },
+    });
+
+    if (!isDeleted) { error404(req, res, `L'utilisateur '${req.params.id}' est introuvable. (Potentiellement soft-delete)`); return; }
+  } catch (e) { next(e); }
+
+  try {
+    await axios.delete(`${process.env.API_MAIN_URL}/user/${req.params.id}`);
+    res.status(204).send();
+  } catch (e) {
+    await UserAccount.restore({ where: { id: req.params.id } });
+
+    // @ts-ignore
+    if (e.isAxiosError && e.response && e.response.status !== 500) {
+      // @ts-ignore
+      res.status(e.response.status).json(e.response.data); return;
+    }
+
+    next(e);
+  }
 });
 
 userRouter.all("/:id", error405(["GET"]));

@@ -57,6 +57,26 @@ userRouter.get("/:id", authRequired({ selfUserIdRequired: true }), async (req, r
   }
 });
 
+userRouter.delete("/:id", authRequired({ selfUserIdRequired: true }), async (req, res, next) => {
+  const params = new url.URLSearchParams();
+
+  if (req.query.forceDelete) params.append("forceDelete", req.query.forceDelete as string);
+
+  try {
+    const response = await axios.delete(`${process.env.API_AUTH_URL}/user/${req.params.id}`, {params});
+    res.status(response.status).json(response.data);
+  } catch (e) {
+
+    // @ts-ignore
+    if (e.isAxiosError && e.response && e.response.status !== 500) {
+      // @ts-ignore
+      res.status(e.response.status).json(e.response.data); return;
+    }
+
+    next(e);
+  }
+});
+
 userRouter.all("/:id", error405(["GET"]));
 
 userRouter.get("/:id/account", authRequired({ selfUserIdRequired: true }), async (req, res, next) => {
