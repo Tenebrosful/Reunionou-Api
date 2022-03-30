@@ -5,7 +5,7 @@ import error404 from "../errors/error404";
 import error405 from "../errors/error405";
 import error422 from "../errors/error422";
 import handleDataValidation from "../middleware/handleDataValidation";
-import { iallEvents, iallUsers, ipartipantEvent, iuser } from "../responseInterface/userResponse";
+import { iallEvents, iallUsers, iautocomplete, ipartipantEvent, iuser } from "../responseInterface/userResponse";
 import userSchema from "../validationSchema/userSchema";
 const userRouter = express.Router();
 
@@ -71,6 +71,36 @@ userRouter.post("/", async (req, res, next) => {
 
 userRouter.all("/", error405(["GET", "DELETE", "POST"]));
 
+userRouter.get("/autocomplete", async (req, res, next) => {
+  if (!req.query.q) { res.status(200).json({ count: 0, usernames: [] }); return; }
+
+  try {
+    const { count, rows: users } = await User.findAndCountAll({
+      attributes: ["username"],
+      limit: 8,
+      where: {
+        username: {
+          [Op.like]: `%${req.query.q}%`
+        }
+      },
+    });
+
+    const resData: iautocomplete = {
+      count,
+      users: []
+    };
+
+    users.forEach(user => resData.users.push({
+      id: user.id,
+      username: user.username
+    }));
+
+    res.status(200).json(resData);
+  } catch (e) { next(e); }
+});
+
+userRouter.all("/autocomplete", error405(["GET"]));
+
 userRouter.get("/:id", async (req, res, next) => {
   try {
     const user = await User.findOne(
@@ -87,6 +117,7 @@ userRouter.get("/:id", async (req, res, next) => {
       createdAt: user.createdAt,
       default_event_mail: user.default_event_mail,
       id: user.id,
+      profile_image_url: user.profile_image_url,
       updatedAt: user.updatedAt,
       username: user.username,
     };

@@ -44,6 +44,26 @@ userRouter.delete("/", authRequired({ adminRequired: true }), async (req, res, n
 
 userRouter.all("/", error405(["GET"]));
 
+userRouter.get("/autocomplete", async (req, res, next) => {
+  const params = new url.URLSearchParams();
+
+  if (req.query.q) params.append("q", req.query.q as string);
+
+  try {
+    const response = await axios.get(`${process.env.API_MAIN_URL}/user/autocomplete`, { params });
+    res.status(response.status).json(response.data);
+  } catch (e) {
+
+    // @ts-ignore
+    if (e.isAxiosError && e.response && e.response.status !== 500) {
+      // @ts-ignore
+      res.status(e.response.status).json(e.response.data); return;
+    }
+
+    next(e);
+  }
+});
+
 userRouter.get("/account", authRequired({ adminRequired: true }), async (req, res, next) => {
   try {
     const response = await axios.get(`${process.env.API_AUTH_URL}/user`);

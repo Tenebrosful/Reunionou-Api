@@ -5,6 +5,11 @@ export interface iallUsers {
   users: iuser[],
 }
 
+export interface iautocomplete {
+  count: number,
+  users: Pick<iuser, "id" | "username">[],
+}
+
 export interface iuser {
   id: string,
   username: string,
