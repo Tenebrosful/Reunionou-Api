@@ -12,7 +12,8 @@ CREATE TABLE `comment` (
   `id` varchar(128) NOT NULL,
   `event_id` varchar(128) NOT NULL,
   `user_id` varchar(128) NOT NULL,
-  `message` text NOT NULL,
+  `message` text DEFAULT NULL,
+  `media` varchar(2038) DEFAULT NULL,
   `createdAt` datetime NOT NULL DEFAULT current_timestamp(),
   `updatedAt` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `deletedAt` datetime DEFAULT NULL,
@@ -74,4 +75,4 @@ CREATE TABLE `userevent` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
--- 2022-03-30 12:07:01
+-- 2022-03-30 14:04:33

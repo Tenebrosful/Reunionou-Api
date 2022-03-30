@@ -1,4 +1,4 @@
-import { Table, Model, Column, DataType, Default, PrimaryKey, ForeignKey, BelongsTo, CreatedAt, DeletedAt, UpdatedAt } from "sequelize-typescript";
+import { Table, Model, Column, DataType, Default, PrimaryKey, ForeignKey, BelongsTo, CreatedAt, DeletedAt, UpdatedAt, IsUrl } from "sequelize-typescript";
 import { Event } from "./Event";
 import { User } from "./User";
 
@@ -23,8 +23,14 @@ export class Comment extends Model {
   @BelongsTo(() => User)
   author: User;
 
+  @Default(null)
   @Column(DataType.TEXT)
   message: string;
+
+  @IsUrl
+  @Default(null)
+  @Column(DataType.STRING(2038))
+  media: string;
 
   @CreatedAt
   createdAt: Date;

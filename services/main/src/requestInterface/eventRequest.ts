@@ -13,5 +13,6 @@ export interface iNewEvent {
 
 export interface iNewComment {
   author_id: string,
-  message: string,
+  media?: string,
+  message?: string,
 }

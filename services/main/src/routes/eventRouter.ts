@@ -422,6 +422,7 @@ eventRouter.get("/:id/comments", async (req, res, next) => {
         createdAt: comment.createdAt,
         event_id: comment.event_id,
         id: comment.id,
+        media: comment.media,
         message: comment.message,
         updatedAt: comment.updatedAt,
       };
@@ -456,12 +457,14 @@ eventRouter.get("/:id/comments", async (req, res, next) => {
 eventRouter.post("/:id/comments", async (req, res, next) => {
   const requestFields: iNewComment = {
     author_id: req.body.author_id,
+    media: req.body.media,
     message: req.body.message,
   };
 
-  if (!handleDataValidation(commentSchema, requestFields, req, res, true)) return;
+  if (!handleDataValidation(commentSchema, requestFields, req, res)) return;
 
   const validedFields = {
+    media: requestFields.media,
     message: requestFields.message,
     user_id: requestFields.author_id,
   };
@@ -469,7 +472,7 @@ eventRouter.post("/:id/comments", async (req, res, next) => {
   try {
     const event = await Event.findOne(
       {
-        attributes: ["id", "title", "description", "address", "lat", "long", "owner_id", "createdAt", "updatedAt"],
+        attributes: ["id"],
         where: {
           id: req.params.id
         }
@@ -486,6 +489,7 @@ eventRouter.post("/:id/comments", async (req, res, next) => {
       createdAt: comment.createdAt,
       event_id: comment.event_id,
       id: comment.id,
+      media: comment.media,
       message: comment.message,
       updatedAt: comment.updatedAt,
     };
@@ -493,36 +497,6 @@ eventRouter.post("/:id/comments", async (req, res, next) => {
     res.status(201).json(resData);
 
   } catch (e) { next(e); }
-});
-
-eventRouter.post("/:id/comment", async (req, res, next) => {
-
-  const commentFields = {
-    event_id: req.params.id,
-    message: req.body.message,
-    user_id: req.body.user_id,
-  };
-
-  try {
-
-    const event = await Event.findOne(
-      {
-        attributes: ["id"],
-        where: {
-          id: req.params.id
-        }
-      });
-
-
-    if (!event) { error404(req, res, `L'évènement '${req.params.id}' est introuvable. (Potentiellement soft-delete)`); return; }
-
-    const eventComment = await Comment.create({ ...commentFields });
-
-    res.status(201).json(eventComment.toJSON());
-
-
-  } catch (e) { next(e); }
-
 });
 
 eventRouter.all("/:id/comments", error405(["GET", "POST"]));
