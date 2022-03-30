@@ -20,7 +20,7 @@
   - [Documentation de l'API](https://github.com/Tenebrosful/Reunionou-Api/wiki/Api-Endpoint)
 
 - Geoffrey Porayko `porayko1u`
-  - BackOffice
+  - Backend API
     - Mise en place de la base du Gateway `TS`
     - Mise en place authentification et token `TS, JWT` 
     - Mise en place de diverses routes `TS`
@@ -44,10 +44,10 @@
   - BackOffice
     - Les maquettes de BackOffice `balsamiq`
     - L'interface de BackOffice `VueJS`
-    - Gestion des utilisateurs - BackOffice `VueJS, Axios`
-    - Gestion des événements - BackOffice `VueJS, Axios`
-    - Connexion avec authentification - BackOffice `JS, Axios`
-    - Stockage des données (token, connexion(boolean), admin) - BackOffice `VueJS, Vuex` 
+    - Gestion des utilisateurs `VueJS, Axios`
+    - Gestion des événements `VueJS, Axios`
+    - Connexion avec authentification `JS, Axios`
+    - Stockage des données (token, connexion(boolean), admin) `VueJS, Vuex` 
   - MobileApp
     - L'interface de MobileApp `Dart`
     - Géolocaliser l'événement `GoogleMap, Dart, http`
