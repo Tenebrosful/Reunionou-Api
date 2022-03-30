@@ -6,7 +6,9 @@ import { UserAccount } from "../../../../databases/authentification/models/UserA
 import error404 from "../errors/error404";
 import error405 from "../errors/error405";
 import error422 from "../errors/error422";
+import handleDataValidation from "../middleware/handleDataValidation";
 import { iAllUserAccount, iUserAccount } from "../responseInterface/userResponse";
+import userSchema from "../validateSchema/UserSchema";
 const userRouter = express.Router();
 
 userRouter.get("/", async (req, res, next) => {
@@ -56,7 +58,7 @@ userRouter.delete("/", async (req, res, next) => {
     });
 
     const promises = inactifsusers.map(async user => {
-      user.destroy({force: req.query.forceDelete === "true"});
+      user.destroy({ force: req.query.forceDelete === "true" });
 
       try {
         await axios.delete(`${process.env.API_MAIN_URL}/user/${user.id}${req.query.forceDelete === "true" ? "?forceDelete=true" : ""}`);
