@@ -47,7 +47,7 @@ eventRouter.delete("/", authRequired({ adminRequired: true }), async (req, res, 
     }
 });
 
-eventRouter.post('/', authRequired(), async (req, res, next) => {
+eventRouter.post("/", authRequired(), async (req, res, next) => {
     try {
         const response = await axios.post(`${process.env.API_MAIN_URL}/event`, {...req.body, owner_id: res.locals.tokenData.id});
 

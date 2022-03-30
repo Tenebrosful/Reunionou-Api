@@ -39,7 +39,7 @@ authRouter.post("/", async (req, res, next) => {
 
                 userAccount.update({ last_connexion: Date.now() });
                 try {
-                    const response = await axios.get(process.env.API_MAIN_URL + '/user/' + userAccount.id);
+                    const response = await axios.get(process.env.API_MAIN_URL + "/user/" + userAccount.id);
 
                     const token = jwt.sign(
                         {

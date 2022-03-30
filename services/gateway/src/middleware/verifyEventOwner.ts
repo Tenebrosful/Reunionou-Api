@@ -1,7 +1,7 @@
-import axios from 'axios';
-import { NextFunction, Request, Response } from 'express';
-import error403 from '../errors/error403';
-import error404 from '../errors/error404';
+import axios from "axios";
+import { NextFunction, Request, Response } from "express";
+import error403 from "../errors/error403";
+import error404 from "../errors/error404";
 export default async function verifyEventOwner(req: Request, res: Response, next: NextFunction) {
 
   try {

@@ -5,9 +5,9 @@ import error405 from "../errors/error405";
 
 const authRouter = express.Router();
 
-authRouter.post('/', async (req, res, next) => {
+authRouter.post("/", async (req, res, next) => {
     try {
-        const response = await axios.post(process.env.API_AUTH_URL + '/auth', req.body);
+        const response = await axios.post(process.env.API_AUTH_URL + "/auth", req.body);
         
         res.status(response.status).json(response.data);
     } catch (e) {
@@ -24,9 +24,9 @@ authRouter.post('/', async (req, res, next) => {
 
 authRouter.all("/", error405(["POST"]));
 
-authRouter.post('/inscription', async (req, res, next) => {
+authRouter.post("/inscription", async (req, res, next) => {
     try {
-        const response = await axios.post(process.env.API_AUTH_URL + '/inscription', req.body);
+        const response = await axios.post(process.env.API_AUTH_URL + "/inscription", req.body);
 
         res.status(response.status).json(response.data);
     } catch (e) {
