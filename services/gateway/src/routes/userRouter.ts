@@ -98,6 +98,34 @@ userRouter.delete("/:id", authRequired({ selfUserIdRequired: true }), async (req
   }
 });
 
+userRouter.patch("/:id", authRequired({ selfUserIdRequired: true }), async (req, res, next) => {
+  try {
+    let responseAuth, responseMain;
+
+    if (req.body.login || req.body.password)
+      responseAuth = await axios.patch(`${process.env.API_AUTH_URL}/user/${req.params.id}`, req.body);
+
+    if (req.body.default_mail || req.body.username)
+      responseMain = await axios.patch(`${process.env.API_MAIN_URL}/user/${req.params.id}`, req.body);
+
+    if (!responseMain && !responseAuth) throw new Error("No data to update");
+
+    if ((responseAuth && responseAuth.status === 204) && (responseMain && responseMain.status === 204)
+      || (!responseAuth && responseMain && responseMain.status === 204) || (!responseMain && responseAuth && responseAuth.status === 204)) { res.status(204).send(); return; }
+
+    res.status(500).send();
+  } catch (e) {
+
+    // @ts-ignore
+    if (e.isAxiosError && e.response && e.response.status !== 500) {
+      // @ts-ignore
+      res.status(e.response.status).json(e.response.data); return;
+    }
+
+    next(e);
+  }
+});
+
 userRouter.all("/:id", error405(["GET", "DELETE"]));
 
 userRouter.get("/:id/account", authRequired({ selfUserIdRequired: true }), async (req, res, next) => {

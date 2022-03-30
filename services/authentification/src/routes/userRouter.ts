@@ -1,5 +1,6 @@
 import axios from "axios";
 import * as express from "express";
+import * as bcrypt from "bcrypt";
 import { Op } from "sequelize";
 import { UserAccount } from "../../../../databases/authentification/models/UserAccount";
 import error404 from "../errors/error404";
@@ -121,7 +122,40 @@ userRouter.delete("/:id", async (req, res, next) => {
   }
 });
 
-userRouter.all("/:id", error405(["GET", "DELETE"]));
+userRouter.patch("/:id", async (req, res, next) => {
+  const bodyFields = {
+    login: req.body.login,
+    password: req.body.password,
+  };
+
+  if (!handleDataValidation(userSchema, bodyFields, req, res)) return;
+
+  const validedFields = {
+    login: bodyFields.login,
+    password: await bcrypt.hash(bodyFields.password, 10),
+  };
+
+  try {
+    const user = await UserAccount.findOne(
+      {
+        where: {
+          id: req.params.id
+        }
+      });
+
+    if (!user) { error404(req, res, `L'utilisateur '${req.params.id}' est introuvable. (Potentiellement soft-delete)`); return; }
+
+    const isUpdated = user.update({...validedFields});
+
+    if (!isUpdated) { error422(req, res, `L'utilisateur '${req.params.id}' n'a pas pu être mis à jour.`); return; }
+
+    res.status(204).send();
+
+  } catch (e) { next(e); }
+
+});
+
+userRouter.all("/:id", error405(["GET", "DELETE", "PATCH"]));
 
 userRouter.post("/:id/restore", async (req, res, next) => {
   try {

@@ -4,7 +4,9 @@ import { User } from "../../../../databases/main/models/User";
 import error404 from "../errors/error404";
 import error405 from "../errors/error405";
 import error422 from "../errors/error422";
+import handleDataValidation from "../middleware/handleDataValidation";
 import { iallEvents, iallUsers, ipartipantEvent, iuser } from "../responseInterface/userResponse";
+import userSchema from "../validationSchema/userSchema";
 const userRouter = express.Router();
 
 userRouter.get("/", async (req, res, next) => {
@@ -108,7 +110,34 @@ userRouter.delete("/:id", async (req, res, next) => {
     next(e); }
 });
 
-userRouter.all("/:id", error405(["GET", "DELETE"]));
+userRouter.patch("/:id", async (req, res, next) => {
+  const userFields = {
+    default_event_mail: req.body.default_mail,
+    username: req.body.username,
+  };
+
+  if(!handleDataValidation(userSchema, userFields, req, res)) return;
+
+  try {
+    const user = await User.findOne(
+      {
+        where: {
+          id: req.params.id
+        }
+      });
+
+    if (!user) { error404(req, res, `L'utilisateur '${req.params.id}' est introuvable. (Potentiellement soft-delete)`); return; }
+
+    const isUpdated = user.update({...userFields});
+
+    if (!isUpdated) { error422(req, res, `L'utilisateur '${req.params.id}' n'a pas pu être mis à jour.`); return; }
+
+    res.status(204).send();
+
+  } catch (e) { next(e); }
+});
+
+userRouter.all("/:id", error405(["GET", "DELETE", "PATCH"]));
 
 userRouter.post("/:id/restore", async (req, res, next) => {
   try {
