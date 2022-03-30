@@ -312,11 +312,11 @@ eventRouter.post("/:id/join-event", async (req, res, next) => {
 
     if (!event) { error404(req, res, `L'évènement '${req.params.id}' est introuvable. (Potentiellement soft-delete)`); return; }
 
-    const [eventParticipant, created]  = await UserEvent.upsert({...participantFields});
+    const [eventParticipant, created] = await UserEvent.upsert({ ...participantFields });
 
-    if(created) res.status(201).json(eventParticipant.toJSON());
+    if (created) res.status(201).json(eventParticipant.toJSON());
     else res.status(200).send();
-  
+
   } catch (e) { next(e); }
 
 });
@@ -402,7 +402,7 @@ eventRouter.post("/:id/comments", async (req, res, next) => {
 
     if (!event) { error404(req, res, `L'évènement '${req.params.id}' est introuvable. (Potentiellement soft-delete)`); return; }
 
-    const comment = await Comment.create({...validedFields, event_id: event.id});
+    const comment = await Comment.create({ ...validedFields, event_id: event.id });
 
     if (!comment) return;
 
@@ -441,11 +441,11 @@ eventRouter.post("/:id/comment", async (req, res, next) => {
 
     if (!event) { error404(req, res, `L'évènement '${req.params.id}' est introuvable. (Potentiellement soft-delete)`); return; }
 
-    const eventComment = await Comment.create({...commentFields});
+    const eventComment = await Comment.create({ ...commentFields });
 
     res.status(201).json(eventComment.toJSON());
 
-  
+
   } catch (e) { next(e); }
 
 });

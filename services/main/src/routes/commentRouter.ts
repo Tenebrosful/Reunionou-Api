@@ -206,6 +206,7 @@ commentRouter.get("/:id", async (req, res, next) => {
               comeToEvent: participant.UserEvent.comeToEvent,
               createdAt: participant.createdAt,
               id: participant.id,
+              profile_image_url: participant.profile_image_url,
               updatedAt: participant.updatedAt,
               username: participant.username,
             });

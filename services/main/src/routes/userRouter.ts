@@ -25,6 +25,7 @@ userRouter.get("/", async (req, res, next) => {
       createdAt: user.createdAt,
       default_event_mail: user.default_event_mail,
       id: user.id,
+      profile_image_url: user.profile_image_url,
       updatedAt: user.updatedAt,
       username: user.username,
     }));
@@ -74,7 +75,7 @@ userRouter.get("/:id", async (req, res, next) => {
   try {
     const user = await User.findOne(
       {
-        attributes: ["id", "username", "default_event_mail", "createdAt", "updatedAt"],
+        attributes: ["id", "username", "default_event_mail", "profile_image_url", "createdAt", "updatedAt"],
         where: {
           id: req.params.id
         }
@@ -106,17 +107,19 @@ userRouter.delete("/:id", async (req, res, next) => {
 
     if (!isDeleted) { error404(req, res, `L'utilisateur '${req.params.id}' est introuvable. (Potentiellement soft-delete)`); return; }
     res.status(204).send();
-  } catch (e) { 
-    next(e); }
+  } catch (e) {
+    next(e);
+  }
 });
 
 userRouter.patch("/:id", async (req, res, next) => {
   const userFields = {
     default_event_mail: req.body.default_mail,
+    profile_image_url: req.body.profile_image_url,
     username: req.body.username,
   };
 
-  if(!handleDataValidation(userSchema, userFields, req, res)) return;
+  if (!handleDataValidation(userSchema, userFields, req, res)) return;
 
   try {
     const user = await User.findOne(
@@ -128,7 +131,7 @@ userRouter.patch("/:id", async (req, res, next) => {
 
     if (!user) { error404(req, res, `L'utilisateur '${req.params.id}' est introuvable. (Potentiellement soft-delete)`); return; }
 
-    const isUpdated = user.update({...userFields});
+    const isUpdated = user.update({ ...userFields });
 
     if (!isUpdated) { error422(req, res, `L'utilisateur '${req.params.id}' n'a pas pu être mis à jour.`); return; }
 
