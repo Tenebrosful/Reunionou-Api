@@ -105,7 +105,7 @@ userRouter.patch("/:id", authRequired({ selfUserIdRequired: true }), async (req,
     if (req.body.login || req.body.password)
       responseAuth = await axios.patch(`${process.env.API_AUTH_URL}/user/${req.params.id}`, req.body);
 
-    if (req.body.default_mail || req.body.username)
+    if (req.body.default_mail || req.body.profile_image_url || req.body.username)
       responseMain = await axios.patch(`${process.env.API_MAIN_URL}/user/${req.params.id}`, req.body);
 
     if (!responseMain && !responseAuth) throw new Error("No data to update");

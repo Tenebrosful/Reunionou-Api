@@ -55,6 +55,7 @@ eventRouter.get("/", async (req, res, next) => {
             comeToEvent: participant.UserEvent.comeToEvent,
             createdAt: participant.createdAt,
             id: participant.id,
+            profile_image_url: participant.profile_image_url,
             updatedAt: participant.updatedAt,
             username: participant.username,
           });
@@ -75,6 +76,7 @@ eventRouter.get("/", async (req, res, next) => {
           e.owner = {
             createdAt: owner.createdAt,
             id: owner.id,
+            profile_image_url: owner.profile_image_url,
             updatedAt: owner.updatedAt,
             username: owner.username,
           };
@@ -203,6 +205,7 @@ eventRouter.get("/:id", async (req, res, next) => {
           comeToEvent: participant.UserEvent.comeToEvent,
           createdAt: participant.createdAt,
           id: participant.id,
+          profile_image_url: participant.profile_image_url,
           updatedAt: participant.updatedAt,
           username: participant.username,
         });
@@ -223,6 +226,7 @@ eventRouter.get("/:id", async (req, res, next) => {
         result.owner = {
           createdAt: owner.createdAt,
           id: owner.id,
+          profile_image_url: owner.profile_image_url,
           updatedAt: owner.updatedAt,
           username: owner.username,
         };
@@ -274,6 +278,7 @@ eventRouter.get("/:id/participants", async (req, res, next) => {
       comeToEvent: participant.UserEvent.comeToEvent,
       createdAt: participant.createdAt,
       id: participant.id,
+      profile_image_url: participant.profile_image_url,
       updatedAt: participant.updatedAt,
       username: participant.username,
     }));
@@ -356,6 +361,7 @@ eventRouter.get("/:id/comments", async (req, res, next) => {
           e.author = {
             createdAt: author.createdAt,
             id: author.id,
+            profile_image_url: author.profile_image_url,
             updatedAt: author.updatedAt,
             username: author.username,
           };

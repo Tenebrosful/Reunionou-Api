@@ -13,7 +13,7 @@ userRouter.get("/", async (req, res, next) => {
   try {
     const { count, rows: users } = await User.findAndCountAll(
       {
-        attributes: ["id", "username", "default_event_mail", "createdAt", "updatedAt"]
+        attributes: ["id", "username", "default_event_mail", "profile_image_url", "createdAt", "updatedAt"]
       });
 
     const result: iallUsers = {
@@ -209,6 +209,7 @@ userRouter.get("/:id/self-event", async (req, res, next) => {
             comeToEvent: participant.UserEvent.comeToEvent,
             createdAt: participant.createdAt,
             id: participant.id,
+            profile_image_url: participant.profile_image_url,
             updatedAt: participant.updatedAt,
             username: participant.username,
           });
@@ -280,6 +281,7 @@ userRouter.get("/:id/joined-event", async (req, res, next) => {
             comeToEvent: participant.UserEvent.comeToEvent,
             createdAt: participant.createdAt,
             id: participant.id,
+            profile_image_url: participant.profile_image_url,
             updatedAt: participant.updatedAt,
             username: participant.username,
           });
@@ -300,6 +302,7 @@ userRouter.get("/:id/joined-event", async (req, res, next) => {
           e.owner = {
             createdAt: owner.createdAt,
             id: owner.id,
+            profile_image_url: owner.profile_image_url,
             updatedAt: owner.updatedAt,
             username: owner.username,
           };

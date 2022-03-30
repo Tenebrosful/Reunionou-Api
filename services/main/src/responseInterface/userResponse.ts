@@ -9,6 +9,7 @@ export interface iuser {
   id: string,
   username: string,
   default_event_mail?: string,
+  profile_image_url: string,
   createdAt: Date,
   updatedAt: Date,
 }

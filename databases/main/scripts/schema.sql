@@ -48,6 +48,7 @@ CREATE TABLE `user` (
   `id` varchar(128) NOT NULL,
   `username` varchar(128) NOT NULL,
   `default_event_mail` varchar(256) DEFAULT NULL,
+  `profile_image_url` varchar(2083) NOT NULL DEFAULT 'https://assets.stickpng.com/thumbs/585e4bf3cb11b227491c339a.png',
   `createdAt` datetime NOT NULL DEFAULT current_timestamp(),
   `updatedAt` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `deletedAt` datetime DEFAULT NULL,
@@ -73,4 +74,4 @@ CREATE TABLE `userevent` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
--- 2022-03-29 15:55:34
+-- 2022-03-30 12:07:01
