@@ -5,6 +5,8 @@ import handleDataValidation from "../middleware/handleDataValidation";
 import * as jwt from "jsonwebtoken";
 import * as bcrypt from "bcrypt";
 import InscriptionSchema from "../validateSchema/InscriptionSchema";
+import error422 from "../errors/error422";
+import { UniqueConstraintError } from "sequelize";
 
 const inscriptionRouter = express.Router();
 
@@ -35,7 +37,7 @@ inscriptionRouter.post("/", async (req, res, next) => {
     try {
       // @ts-ignore
       validateFieldsAuth.id = user.id;
-      await axios.post(process.env.API_MAIN_URL + "/user", validateFieldsProfile);
+      const response = (await axios.post(process.env.API_MAIN_URL + "/user", { ...validateFieldsProfile, id: user.id })).data;
 
       const token = jwt.sign(
         {
@@ -44,12 +46,32 @@ inscriptionRouter.post("/", async (req, res, next) => {
         },
         process.env.SECRETPASSWDTOKEN || "", { expiresIn: "1h" });
 
-        res.status(201).json({token});
+      res.status(201).json({
+        user: {
+          id: response.id,
+
+          isAdmin: user.isAdmin,
+
+          token,
+
+          username: response.username
+        }
+      });
     } catch (e) {
       user.destroy({ force: true });
+
+      // @ts-ignore
+      if (e.isAxiosError && e.response && e.response.status !== 500) {
+        // @ts-ignore
+        res.status(e.response.status).json(e.response.data); return;
+      }
+
       next(e);
     }
-  } catch (e) { next(e); }
+  } catch (e) {
+    if (e instanceof UniqueConstraintError) { error422(req, res, `Le login ${validateFieldsAuth.login} existe déjà`); return; }
+    next(e);
+  }
 
 });
 

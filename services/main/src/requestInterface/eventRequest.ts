@@ -10,3 +10,8 @@ export interface iNewEvent {
   owner_id?: string,
   title: string,
 }
+
+export interface iNewComment {
+  author_id: string,
+  message: string,
+}

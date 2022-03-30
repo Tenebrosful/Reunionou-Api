@@ -18,7 +18,7 @@ export interface ievent {
   date: Date,
   coords: icoords,
   owner_id: string,
-  owner?: Omit<iuser,"last_connexion" | "default_event_mail"> | null,
+  owner?: Omit<iuser, "last_connexion" | "default_event_mail"> | null,
   comingParticipant?: number,
   totalParticipant?: number,
   participants?: iparticipant[],
@@ -34,14 +34,15 @@ export interface iallComments {
 export interface icomment {
   id: string,
   event_id: string,
+  event?: ievent | null,
   author_id: string,
-  author?: Omit<iuser,"last_connexion" | "default_event_mail"> | null,
+  author?: Omit<iuser, "last_connexion" | "default_event_mail"> | null,
   message: string,
   createdAt: Date,
   updatedAt: Date,
 }
 
-export interface iparticipant extends Omit<iuser,"last_connexion" | "default_event_mail"> {
+export interface iparticipant extends Omit<iuser, "last_connexion" | "default_event_mail"> {
   comeToEvent: boolean,
 }
 

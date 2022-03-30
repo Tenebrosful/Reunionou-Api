@@ -1,4 +1,3 @@
-import { initBDD } from "../../../databases/authentification/database";
 import * as express from "express";
 import * as cors from "cors";
 
@@ -7,14 +6,15 @@ import logger from "./middleware/logger";
 
 import error400 from "./errors/error400";
 import error500 from "./errors/error500";
-import inscriptionRouter from "./routes/inscriptionRouter";
 import authRouter from "./routes/authRouter";
+import eventRouter from "./routes/eventRouter";
 import userRouter from "./routes/userRouter";
+import commentRouter from "./routes/commentRouter";
+
 
 const app = express();
 const port = process.env.EXPRESS_PORT || 3000;
 
-initBDD();
 
 app.use(cors());
 app.use(logger);
@@ -33,8 +33,9 @@ app.all("/api", (req, res) => {
 });
 
 app.use("/api/auth", authRouter);
-app.use("/api/inscription", inscriptionRouter);
+app.use("/api/event", eventRouter);
 app.use("/api/user", userRouter);
+app.use("/api/comment", commentRouter);
 
 /**
  * Handle Errors

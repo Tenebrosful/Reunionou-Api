@@ -5,6 +5,7 @@ services:
     image: adminer:4
     ports:
       - ${EXPOSED_ADMINER_PORT}:8080
+    command: php -S 0.0.0.0:8080 -t /var/www/html
     networks:
       - Reunionou_api
   
@@ -12,7 +13,7 @@ services:
     container_name: Reunionou_api_db_main_g5_v2
     image: mariadb:latest
     env_file:
-      - ./databases/main/config/bdd.env
+      - ./config/main-bdd.env
     volumes:
       - ./databases/data/main:/var/lib/mysql
       - ./databases/main/scripts/schema.sql:/docker-entrypoint-initdb.d/1.sql
@@ -24,7 +25,7 @@ services:
     container_name: Reunionou_api_db_auth_g5_v2
     image: mariadb:latest
     env_file:
-      - ./databases/authentification/config/bdd.env
+      - ./config/auth-bdd.env
     volumes:
       - ./databases/data/auth:/var/lib/mysql
       - ./databases/authentification/scripts/schema.sql:/docker-entrypoint-initdb.d/1.sql
@@ -40,7 +41,7 @@ services:
       links:
         - Reunionou_api_db_main_g5_v2
       env_file:
-        - ./databases/main/config/bdd.env
+        - ./config/main-bdd.env
       working_dir: /usr/src/app
       volumes:
         - ./tsconfig.json:/usr/src/app/tsconfig.json
@@ -49,8 +50,6 @@ services:
         - ./databases/main:/usr/src/app/databases/main
         - ./services/main:/usr/src/app/services/main
         - ./node_modules:/usr/src/app/node_modules
-      ports:
-        - ${EXPOSED_MAIN_API_PORT}:3000
       command: npx ts-node services/main/src/server.ts
       networks:
         - Reunionou_api
@@ -64,8 +63,8 @@ services:
         - Reunionou_api_main_g5_v2
         - Reunionou_api_db_auth_g5_v2
       env_file:
-        - ./databases/authentification/config/bdd.env
-        - ./services/authentification/.env
+        - ./config/auth-bdd.env
+        - ./config/auth.env
       working_dir: /usr/src/app
       volumes:
         - ./tsconfig.json:/usr/src/app/tsconfig.json
@@ -74,9 +73,28 @@ services:
         - ./databases/authentification:/usr/src/app/databases/authentification
         - ./services/authentification:/usr/src/app/services/authentification
         - ./node_modules:/usr/src/app/node_modules
-      ports:
-        - ${EXPOSED_AUTH_API_PORT}:3000
       command: npx ts-node services/authentification/src/server.ts
+      networks:
+        - Reunionou_api
+
+  Reunionou_api_gateway_g5_v2:
+      container_name: Reunionou_api_gateway_g5_v2
+      image: node:17
+      links:
+        - Reunionou_api_main_g5_v2
+        - Reunionou_api_auth_g5_v2
+      env_file:
+        - ./config/gateway.env
+      working_dir: /usr/src/app
+      volumes:
+        - ./tsconfig.json:/usr/src/app/tsconfig.json
+        - ./package.json:/usr/src/app/package.json
+        - ./package-lock.json:/usr/src/app/package-lock.json
+        - ./services/gateway:/usr/src/app/services/gateway
+        - ./node_modules:/usr/src/app/node_modules
+      ports:
+        - ${EXPOSED_GATEWAY_API_PORT}:3000
+      command: npx ts-node services/gateway/src/server.ts
       networks:
         - Reunionou_api
 

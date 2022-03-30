@@ -10,6 +10,7 @@ import eventRouter from "./routes/eventRouter";
 
 import error400 from "./errors/error400";
 import error500 from "./errors/error500";
+import commentRouter from "./routes/commentRouter";
 
 const app = express();
 const port = process.env.EXPRESS_PORT || 3000;
@@ -33,6 +34,7 @@ app.all("/api", (req, res) => {
 });
 app.use("/api/user", userRouter);
 app.use("/api/event", eventRouter);
+app.use("/api/comment", commentRouter);
 
 /**
  * Handle Errors

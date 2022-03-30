@@ -48,6 +48,7 @@ CREATE TABLE `user` (
   `id` varchar(128) NOT NULL,
   `username` varchar(128) NOT NULL,
   `default_event_mail` varchar(256) DEFAULT NULL,
+  `profile_image_url` varchar(2083) NOT NULL DEFAULT 'https://assets.stickpng.com/thumbs/585e4bf3cb11b227491c339a.png',
   `createdAt` datetime NOT NULL DEFAULT current_timestamp(),
   `updatedAt` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `deletedAt` datetime DEFAULT NULL,
@@ -57,12 +58,15 @@ CREATE TABLE `user` (
 
 DROP TABLE IF EXISTS `userevent`;
 CREATE TABLE `userevent` (
-  `user_id` varchar(128) NOT NULL,
+  `user_id` varchar(128) DEFAULT NULL,
   `event_id` varchar(128) NOT NULL,
+  `username` varchar(128) DEFAULT NULL,
   `comeToEvent` tinyint(4) NOT NULL DEFAULT 0,
   `createdAt` datetime NOT NULL DEFAULT current_timestamp(),
   `updatedAt` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `deletedAt` datetime DEFAULT NULL,
+  UNIQUE KEY `user_id_event_id` (`user_id`,`event_id`),
+  UNIQUE KEY `username_event_id` (`username`,`event_id`),
   KEY `event_id` (`event_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `userevent_ibfk_10` FOREIGN KEY (`event_id`) REFERENCES `event` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -70,4 +74,4 @@ CREATE TABLE `userevent` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
--- 2022-03-25 12:01:15
+-- 2022-03-30 12:07:01

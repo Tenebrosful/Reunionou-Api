@@ -7,6 +7,7 @@ import * as bcrypt from "bcrypt";
 import error401 from "../errors/error401";
 import AuthSchema from "../validateSchema/AuthSchema";
 import error404 from "../errors/error404";
+import axios from "axios";
 
 const authRouter = express.Router();
 
@@ -29,23 +30,46 @@ authRouter.post("/", async (req, res, next) => {
 
         if (!userAccount) {
 
-            error401(req, res, "Combinaison identifiant mot de passe invalide");
+            error401(req, res, "Combinaison identifiant mot de passe invalide"); // ici
             return;
         }
 
-        bcrypt.compare(userFields.password, userAccount.password, function (err, result) {
+        bcrypt.compare(userFields.password, userAccount.password, async function (err, result) {
             if (result) {
-                userAccount.update({last_connexion: Date.now()});
-                const token = jwt.sign(
-                    {
-                        id: userAccount.id,
-                        isAdmin: userAccount.isAdmin,
-                        last_connexion: userAccount.last_connexion,
-                    },
-                    process.env.SECRETPASSWDTOKEN || "", { expiresIn: "2h" });
-                res.status(200).json({ token });
+
+                userAccount.update({ last_connexion: Date.now() });
+                try {
+                    const response = await axios.get(process.env.API_MAIN_URL + '/user/' + userAccount.id);
+
+                    const token = jwt.sign(
+                        {
+                            id: userAccount.id,
+                            isAdmin: userAccount.isAdmin,
+                            last_connexion: userAccount.last_connexion,
+                        },
+                        process.env.SECRETPASSWDTOKEN || "", { expiresIn: "2h" });
+
+                    userAccount.update({last_connexion: Date.now()});
+
+                    res.status(200).json({
+                        user: {
+                            id: userAccount.id,
+                            isAdmin: userAccount.isAdmin,
+                            token,
+                            username: response.data.username,
+                        }
+                    });
+                } catch (e) {
+                    // @ts-ignore
+                    if (e.isAxiosError && e.response && e.response.status !== 500) {
+                        // @ts-ignore
+                        res.status(e.response.status).json(e.response.data); return;
+                    }
+
+                    next(e);
+                }
             } else {
-                error401(req, res, "Combinaison identifiant mot de passe invalide");
+                error401(req, res, "Combinaison identifiant mot de passe invalide ici"); // ou ici
                 return;
             }
         });
@@ -56,7 +80,7 @@ authRouter.post("/", async (req, res, next) => {
 
 });
 
-authRouter.all("/", error405(["POST"]));
+authRouter.all("/", error405(["POST", "PATCH"]));
 
 authRouter.post("/tokenverify", async (req, res, next) => {
 
@@ -77,7 +101,7 @@ authRouter.post("/tokenverify", async (req, res, next) => {
     try {
         const user = await UserAccount.findOne(
             {
-                attributes: [ "id" ],
+                attributes: ["id"],
                 // @ts-ignore
                 where: { id: tokenData.id }
 
@@ -88,6 +112,8 @@ authRouter.post("/tokenverify", async (req, res, next) => {
             error404(req, res, "Token invalide");
             return;
         }
+
+        user.update({ last_connexion: Date.now() });
 
         res.status(200).send();
 

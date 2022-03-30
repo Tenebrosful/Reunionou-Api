@@ -1,12 +1,16 @@
 import * as express from "express";
+import { Op } from "sequelize";
+import { Comment } from "../../../../databases/main/models/Comment";
 import { Event } from "../../../../databases/main/models/Event";
 import { User } from "../../../../databases/main/models/User";
+import { UserEvent } from "../../../../databases/main/models/UserEvent";
 import error404 from "../errors/error404";
 import error405 from "../errors/error405";
 import error422 from "../errors/error422";
 import handleDataValidation from "../middleware/handleDataValidation";
-import { iNewEvent } from "../requestInterface/eventRequest";
+import { iNewComment, iNewEvent } from "../requestInterface/eventRequest";
 import { iallComments, iallEvents, iallParticipants, icomment, ievent } from "../responseInterface/eventResponse";
+import commentSchema from "../validationSchema/commentSchema";
 import eventSchema from "../validationSchema/eventSchema";
 
 const eventRouter = express.Router();
@@ -52,6 +56,7 @@ eventRouter.get("/", async (req, res, next) => {
             comeToEvent: participant.UserEvent.comeToEvent,
             createdAt: participant.createdAt,
             id: participant.id,
+            profile_image_url: participant.profile_image_url,
             updatedAt: participant.updatedAt,
             username: participant.username,
           });
@@ -72,6 +77,7 @@ eventRouter.get("/", async (req, res, next) => {
           e.owner = {
             createdAt: owner.createdAt,
             id: owner.id,
+            profile_image_url: owner.profile_image_url,
             updatedAt: owner.updatedAt,
             username: owner.username,
           };
@@ -157,7 +163,35 @@ eventRouter.post("/", async (req, res, next) => {
 
 });
 
-eventRouter.all("/", error405(["GET"]));
+eventRouter.delete("/", async (req, res, next) => {
+  try {
+    await Event.destroy({
+      force: true,
+      where: {
+        deletedAt: {
+          [Op.not]: null
+        }
+      }
+    });
+
+    const inactifEvents = await Event.findAll({
+      attributes: ["id"],
+      where: {
+        date: {
+          [Op.lte]: new Date(new Date().getTime() - (1000 * 60 * 60 * 24))
+        }
+      }
+    });
+
+    const promises = inactifEvents.map(async event => event.destroy({ force: req.query.forceDelete === "true" }));
+
+    await Promise.all(promises);
+
+    res.status(204).json();
+  } catch (e) { next(e); }
+});
+
+eventRouter.all("/", error405(["GET", "DELETE"]));
 
 eventRouter.get("/:id", async (req, res, next) => {
   try {
@@ -200,6 +234,7 @@ eventRouter.get("/:id", async (req, res, next) => {
           comeToEvent: participant.UserEvent.comeToEvent,
           createdAt: participant.createdAt,
           id: participant.id,
+          profile_image_url: participant.profile_image_url,
           updatedAt: participant.updatedAt,
           username: participant.username,
         });
@@ -220,6 +255,7 @@ eventRouter.get("/:id", async (req, res, next) => {
         result.owner = {
           createdAt: owner.createdAt,
           id: owner.id,
+          profile_image_url: owner.profile_image_url,
           updatedAt: owner.updatedAt,
           username: owner.username,
         };
@@ -271,6 +307,7 @@ eventRouter.get("/:id/participants", async (req, res, next) => {
       comeToEvent: participant.UserEvent.comeToEvent,
       createdAt: participant.createdAt,
       id: participant.id,
+      profile_image_url: participant.profile_image_url,
       updatedAt: participant.updatedAt,
       username: participant.username,
     }));
@@ -281,6 +318,37 @@ eventRouter.get("/:id/participants", async (req, res, next) => {
 });
 
 eventRouter.all("/:id/participants", error405(["GET"]));
+
+eventRouter.post("/:id/join-event", async (req, res, next) => {
+
+  const participantFields = {
+    comeToEvent: req.body.comeToEvent || false,
+    event_id: req.params.id,
+    user_id: req.body.user_id,
+    username: req.body.username,
+  };
+
+  try {
+
+    const event = await Event.findOne(
+      {
+        attributes: ["id"],
+        where: {
+          id: req.params.id
+        }
+      });
+
+
+    if (!event) { error404(req, res, `L'évènement '${req.params.id}' est introuvable. (Potentiellement soft-delete)`); return; }
+
+    const [eventParticipant, created] = await UserEvent.upsert({ ...participantFields });
+
+    if (created) res.status(201).json(eventParticipant.toJSON());
+    else res.status(200).send();
+
+  } catch (e) { next(e); }
+
+});
 
 eventRouter.get("/:id/comments", async (req, res, next) => {
   try {
@@ -322,6 +390,7 @@ eventRouter.get("/:id/comments", async (req, res, next) => {
           e.author = {
             createdAt: author.createdAt,
             id: author.id,
+            profile_image_url: author.profile_image_url,
             updatedAt: author.updatedAt,
             username: author.username,
           };
@@ -338,6 +407,78 @@ eventRouter.get("/:id/comments", async (req, res, next) => {
 
 });
 
-eventRouter.all("/:id/comments", error405(["GET"]));
+eventRouter.post("/:id/comments", async (req, res, next) => {
+  const requestFields: iNewComment = {
+    author_id: req.body.author_id,
+    message: req.body.message,
+  };
+
+  if (!handleDataValidation(commentSchema, requestFields, req, res, true)) return;
+
+  const validedFields = {
+    message: requestFields.message,
+    user_id: requestFields.author_id,
+  };
+
+  try {
+    const event = await Event.findOne(
+      {
+        attributes: ["id", "title", "description", "address", "lat", "long", "owner_id", "createdAt", "updatedAt"],
+        where: {
+          id: req.params.id
+        }
+      });
+
+    if (!event) { error404(req, res, `L'évènement '${req.params.id}' est introuvable. (Potentiellement soft-delete)`); return; }
+
+    const comment = await Comment.create({ ...validedFields, event_id: event.id });
+
+    if (!comment) return;
+
+    const resData: icomment = {
+      author_id: comment.user_id,
+      createdAt: comment.createdAt,
+      event_id: comment.event_id,
+      id: comment.id,
+      message: comment.message,
+      updatedAt: comment.updatedAt,
+    };
+
+    res.status(201).json(resData);
+
+  } catch (e) { next(e); }
+});
+
+eventRouter.post("/:id/comment", async (req, res, next) => {
+
+  const commentFields = {
+    event_id: req.params.id,
+    message: req.body.message,
+    user_id: req.body.user_id,
+  };
+
+  try {
+
+    const event = await Event.findOne(
+      {
+        attributes: ["id"],
+        where: {
+          id: req.params.id
+        }
+      });
+
+
+    if (!event) { error404(req, res, `L'évènement '${req.params.id}' est introuvable. (Potentiellement soft-delete)`); return; }
+
+    const eventComment = await Comment.create({ ...commentFields });
+
+    res.status(201).json(eventComment.toJSON());
+
+
+  } catch (e) { next(e); }
+
+});
+
+eventRouter.all("/:id/comments", error405(["GET", "POST"]));
 
 export default eventRouter;

@@ -1,4 +1,4 @@
-import { Column, CreatedAt, DataType, Default, DeletedAt, Model, PrimaryKey, Table, UpdatedAt } from "sequelize-typescript";
+import { Column, CreatedAt, DataType, Default, DeletedAt, Model, PrimaryKey, Table, Unique, UpdatedAt } from "sequelize-typescript";
 
 @Table({tableName: "userAccount"})
 export class UserAccount extends Model {
@@ -7,6 +7,7 @@ export class UserAccount extends Model {
   @Column(DataType.UUIDV4)
   id: string;
 
+  @Unique
   @Column(DataType.STRING(128))
   login: string;
 

@@ -1,16 +1,19 @@
 import * as express from "express";
+import { Op } from "sequelize";
 import { User } from "../../../../databases/main/models/User";
 import error404 from "../errors/error404";
 import error405 from "../errors/error405";
 import error422 from "../errors/error422";
-import { iallEvents, iallUsers, ipartipantEvent, iuser } from "../responseInterface/userResponse";
+import handleDataValidation from "../middleware/handleDataValidation";
+import { iallEvents, iallUsers, iautocomplete, ipartipantEvent, iuser } from "../responseInterface/userResponse";
+import userSchema from "../validationSchema/userSchema";
 const userRouter = express.Router();
 
 userRouter.get("/", async (req, res, next) => {
   try {
     const { count, rows: users } = await User.findAndCountAll(
       {
-        attributes: ["id", "username", "default_event_mail", "last_connexion", "createdAt", "updatedAt"]
+        attributes: ["id", "username", "default_event_mail", "profile_image_url", "createdAt", "updatedAt"]
       });
 
     const result: iallUsers = {
@@ -22,6 +25,7 @@ userRouter.get("/", async (req, res, next) => {
       createdAt: user.createdAt,
       default_event_mail: user.default_event_mail,
       id: user.id,
+      profile_image_url: user.profile_image_url,
       updatedAt: user.updatedAt,
       username: user.username,
     }));
@@ -29,6 +33,21 @@ userRouter.get("/", async (req, res, next) => {
     res.status(200).json(result);
   } catch (e) { next(e); }
 
+});
+
+userRouter.delete("/", async (req, res, next) => {
+  try {
+    await User.destroy({
+      force: true,
+      where: {
+        deletedAt: {
+          [Op.not]: null
+        }
+      }
+    });
+
+    res.status(204).send();
+  } catch (e) { next(e); }
 });
 
 userRouter.post("/", async (req, res, next) => {
@@ -39,24 +58,54 @@ userRouter.post("/", async (req, res, next) => {
     username: req.body.username,
   };
 
-    try {
-      const user = await User.create({ ...userFields });
+  try {
+    const user = await User.create({ ...userFields });
 
-      if (user) 
-        res.status(201).send();
-      
-    } catch (error) {
-      next(error);
-    }
+    if (user)
+      res.status(201).json(user);
+
+  } catch (error) {
+    next(error);
+  }
 });
 
-userRouter.all("/", error405(["GET", "POST"]));
+userRouter.all("/", error405(["GET", "DELETE", "POST"]));
+
+userRouter.get("/autocomplete", async (req, res, next) => {
+  if (!req.query.q) { res.status(200).json({ count: 0, usernames: [] }); return; }
+
+  try {
+    const { count, rows: users } = await User.findAndCountAll({
+      attributes: ["username"],
+      limit: 8,
+      where: {
+        username: {
+          [Op.like]: `%${req.query.q}%`
+        }
+      },
+    });
+
+    const resData: iautocomplete = {
+      count,
+      users: []
+    };
+
+    users.forEach(user => resData.users.push({
+      id: user.id,
+      username: user.username
+    }));
+
+    res.status(200).json(resData);
+  } catch (e) { next(e); }
+});
+
+userRouter.all("/autocomplete", error405(["GET"]));
 
 userRouter.get("/:id", async (req, res, next) => {
   try {
     const user = await User.findOne(
       {
-        attributes: ["id", "username", "default_event_mail", "last_connexion", "createdAt", "updatedAt"],
+        attributes: ["id", "username", "default_event_mail", "profile_image_url", "createdAt", "updatedAt"],
         where: {
           id: req.params.id
         }
@@ -68,6 +117,7 @@ userRouter.get("/:id", async (req, res, next) => {
       createdAt: user.createdAt,
       default_event_mail: user.default_event_mail,
       id: user.id,
+      profile_image_url: user.profile_image_url,
       updatedAt: user.updatedAt,
       username: user.username,
     };
@@ -80,18 +130,48 @@ userRouter.delete("/:id", async (req, res, next) => {
   try {
     const isDeleted = await User.destroy(
       {
+        force: req.query.forceDelete === "true",
         where: {
           id: req.params.id
         }
       });
 
     if (!isDeleted) { error404(req, res, `L'utilisateur '${req.params.id}' est introuvable. (Potentiellement soft-delete)`); return; }
+    res.status(204).send();
+  } catch (e) {
+    next(e);
+  }
+});
+
+userRouter.patch("/:id", async (req, res, next) => {
+  const userFields = {
+    default_event_mail: req.body.default_mail,
+    profile_image_url: req.body.profile_image_url,
+    username: req.body.username,
+  };
+
+  if (!handleDataValidation(userSchema, userFields, req, res)) return;
+
+  try {
+    const user = await User.findOne(
+      {
+        where: {
+          id: req.params.id
+        }
+      });
+
+    if (!user) { error404(req, res, `L'utilisateur '${req.params.id}' est introuvable. (Potentiellement soft-delete)`); return; }
+
+    const isUpdated = user.update({ ...userFields });
+
+    if (!isUpdated) { error422(req, res, `L'utilisateur '${req.params.id}' n'a pas pu être mis à jour.`); return; }
 
     res.status(204).send();
+
   } catch (e) { next(e); }
 });
 
-userRouter.all("/:id", error405(["GET", "DELETE"]));
+userRouter.all("/:id", error405(["GET", "DELETE", "PATCH"]));
 
 userRouter.post("/:id/restore", async (req, res, next) => {
   try {
@@ -163,6 +243,7 @@ userRouter.get("/:id/self-event", async (req, res, next) => {
             comeToEvent: participant.UserEvent.comeToEvent,
             createdAt: participant.createdAt,
             id: participant.id,
+            profile_image_url: participant.profile_image_url,
             updatedAt: participant.updatedAt,
             username: participant.username,
           });
@@ -234,6 +315,7 @@ userRouter.get("/:id/joined-event", async (req, res, next) => {
             comeToEvent: participant.UserEvent.comeToEvent,
             createdAt: participant.createdAt,
             id: participant.id,
+            profile_image_url: participant.profile_image_url,
             updatedAt: participant.updatedAt,
             username: participant.username,
           });
@@ -254,6 +336,7 @@ userRouter.get("/:id/joined-event", async (req, res, next) => {
           e.owner = {
             createdAt: owner.createdAt,
             id: owner.id,
+            profile_image_url: owner.profile_image_url,
             updatedAt: owner.updatedAt,
             username: owner.username,
           };
