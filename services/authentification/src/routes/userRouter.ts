@@ -50,6 +50,7 @@ userRouter.delete("/", async (req, res, next) => {
     });
 
     const inactifsusers = await UserAccount.findAll({
+      attributes: ["id"],
       where: {
         last_connexion: {
           [Op.lte]: new Date(new Date().getTime() - (1000 * 60 * 60 * 24 * 30))
