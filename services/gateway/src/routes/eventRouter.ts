@@ -28,6 +28,25 @@ eventRouter.get("/", authRequired({ adminRequired: true }), async (req, res, nex
     }
 });
 
+eventRouter.delete("/", authRequired({ adminRequired: true }), async (req, res, next) => {
+    const params = new url.URLSearchParams();
+
+    if (req.query.forceDelete === "true") params.append("forceDelete", req.query.forceDelete as string);
+
+    try {
+        const response = await axios.delete(`${process.env.API_MAIN_URL}/event`, { params });
+        res.status(response.status).json(response.data);
+    } catch (e) {
+        // @ts-ignore
+        if (e.isAxiosError && e.response && e.response.status !== 500) {
+            // @ts-ignore
+            res.status(e.response.status).json(e.response.data); return;
+        }
+
+        next(e);
+    }
+});
+
 eventRouter.post('/', authRequired(), async (req, res, next) => {
     try {
         const response = await axios.post(`${process.env.API_MAIN_URL}/event`, {...req.body, owner_id: res.locals.tokenData.id});

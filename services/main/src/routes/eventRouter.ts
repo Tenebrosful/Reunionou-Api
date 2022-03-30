@@ -1,4 +1,5 @@
 import * as express from "express";
+import { Op } from "sequelize";
 import { Comment } from "../../../../databases/main/models/Comment";
 import { Event } from "../../../../databases/main/models/Event";
 import { User } from "../../../../databases/main/models/User";
@@ -162,7 +163,35 @@ eventRouter.post("/", async (req, res, next) => {
 
 });
 
-eventRouter.all("/", error405(["GET"]));
+eventRouter.delete("/", async (req, res, next) => {
+  try {
+    await Event.destroy({
+      force: true,
+      where: {
+        deletedAt: {
+          [Op.not]: null
+        }
+      }
+    });
+
+    const inactifEvents = await Event.findAll({
+      attributes: ["id"],
+      where: {
+        date: {
+          [Op.lte]: new Date(new Date().getTime() - (1000 * 60 * 60 * 24))
+        }
+      }
+    });
+
+    const promises = inactifEvents.map(async event => event.destroy({ force: req.query.forceDelete === "true" }));
+
+    await Promise.all(promises);
+
+    res.status(204).json();
+  } catch (e) { next(e); }
+});
+
+eventRouter.all("/", error405(["GET", "DELETE"]));
 
 eventRouter.get("/:id", async (req, res, next) => {
   try {
