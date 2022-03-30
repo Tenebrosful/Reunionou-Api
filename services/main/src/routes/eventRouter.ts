@@ -319,6 +319,50 @@ eventRouter.get("/:id/participants", async (req, res, next) => {
 
 eventRouter.all("/:id/participants", error405(["GET"]));
 
+eventRouter.post("/:id/invite-event/:user_id", async (req, res, next) => {
+  try {
+    const event = await Event.findOne(
+      {
+        attributes: ["id"],
+        where: {
+          id: req.params.id
+        }
+      });
+
+    if (!event) { error404(req, res, `L'évènement '${req.params.id}' est introuvable. (Potentiellement soft-delete)`); return; }
+
+    const user = await User.findOne(
+      {
+        attributes: ["id"],
+        where: {
+          id: req.params.user_id
+        }
+      });
+
+    if (!user) { error404(req, res, `L'utilisateur '${req.params.user_id}' est introuvable. (Potentiellement soft-delete)`); return; }
+
+    const isInvited = await UserEvent.count({
+      where: {
+        event_id: event.id,
+        user_id: user.id
+      }
+    });
+
+    if (isInvited) { error422(req, res, `L'utilisateur '${req.params.user_id}' est déjà invité à l'évènement ${req.params.id}.`); return; }
+
+    await UserEvent.create({
+      comeToEvent: req.body.comeToEvent === "true",
+      event_id: event.id,
+      user_id: user.id,
+    });
+
+    res.status(201).send();
+  } catch (e) { next(e); }
+
+});
+
+eventRouter.all("/:id/invite-event/:user_id", error405(["POST"]));
+
 eventRouter.post("/:id/join-event", async (req, res, next) => {
 
   const participantFields = {
@@ -349,6 +393,8 @@ eventRouter.post("/:id/join-event", async (req, res, next) => {
   } catch (e) { next(e); }
 
 });
+
+eventRouter.all("/:id/join-event", error405(["POST"]));
 
 eventRouter.get("/:id/comments", async (req, res, next) => {
   try {

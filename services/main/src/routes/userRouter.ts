@@ -76,7 +76,7 @@ userRouter.get("/autocomplete", async (req, res, next) => {
 
   try {
     const { count, rows: users } = await User.findAndCountAll({
-      attributes: ["username"],
+      attributes: ["id", "username"],
       limit: 8,
       where: {
         username: {

@@ -49,7 +49,7 @@ eventRouter.delete("/", authRequired({ adminRequired: true }), async (req, res, 
 
 eventRouter.post("/", authRequired(), async (req, res, next) => {
     try {
-        const response = await axios.post(`${process.env.API_MAIN_URL}/event`, {...req.body, owner_id: res.locals.tokenData.id});
+        const response = await axios.post(`${process.env.API_MAIN_URL}/event`, { ...req.body, owner_id: res.locals.tokenData.id });
 
         res.status(response.status).json(response.data);
     } catch (e) {
@@ -88,7 +88,7 @@ eventRouter.get("/:id", async (req, res, next) => {
     }
 });
 
-eventRouter.delete("/:id", authRequired(), verifyEventOwner , async (req, res, next) => {
+eventRouter.delete("/:id", authRequired(), verifyEventOwner, async (req, res, next) => {
     try {
         const response = await axios.delete(`${process.env.API_MAIN_URL}/event/${req.params.id}`);
 
@@ -125,10 +125,31 @@ eventRouter.get("/:id/participants", async (req, res, next) => {
     }
 });
 
+eventRouter.all("/:id/participants", error405(["GET"]));
+
+eventRouter.post("/:id/invite-event/:user_id", authRequired(), verifyEventOwner, async (req, res, next) => {
+    try {
+        const response = await axios.post(`${process.env.API_MAIN_URL}/event/${req.params.id}/invite-event/${req.params.user_id}`, req.body);
+
+        res.status(response.status).json(response.data);
+    } catch (e) {
+
+        // @ts-ignore
+        if (e.isAxiosError && e.response && e.response.status !== 500) {
+            // @ts-ignore
+            res.status(e.response.status).json(e.response.data); return;
+        }
+
+        next(e);
+    }
+});
+
+eventRouter.all("/:id/invite-event/:user_id", error405(["POST"]));
+
 eventRouter.post("/:id/join-event/auth", authRequired(), async (req, res, next) => {
 
     try {
-        const response = await axios.post(`${process.env.API_MAIN_URL}/event/${req.params.id}/join-event`, {...req.body, user_id: res.locals.tokenData.id});
+        const response = await axios.post(`${process.env.API_MAIN_URL}/event/${req.params.id}/join-event`, { ...req.body, user_id: res.locals.tokenData.id });
 
         res.status(response.status).json(response.data);
     } catch (e) {
@@ -143,6 +164,8 @@ eventRouter.post("/:id/join-event/auth", authRequired(), async (req, res, next) 
     }
 
 });
+
+eventRouter.all("/:id/join-event/auth", error405(["POST"]));
 
 eventRouter.post("/:id/join-event", async (req, res, next) => {
 
@@ -163,10 +186,12 @@ eventRouter.post("/:id/join-event", async (req, res, next) => {
 
 });
 
+eventRouter.all("/:id/join-event", error405(["POST"]));
+
 eventRouter.post("/:id/comment", authRequired(), async (req, res, next) => {
 
     try {
-        const response = await axios.post(`${process.env.API_MAIN_URL}/event/${req.params.id}/comment`, {...req.body, user_id: res.locals.tokenData.id});
+        const response = await axios.post(`${process.env.API_MAIN_URL}/event/${req.params.id}/comment`, { ...req.body, user_id: res.locals.tokenData.id });
 
         res.status(response.status).json(response.data);
     } catch (e) {
@@ -182,8 +207,6 @@ eventRouter.post("/:id/comment", authRequired(), async (req, res, next) => {
 
 });
 
-
-eventRouter.all("/:id/participants", error405(["GET"]));
 
 eventRouter.get("/:id/comments", async (req, res, next) => {
     const params = new url.URLSearchParams();
@@ -208,7 +231,7 @@ eventRouter.get("/:id/comments", async (req, res, next) => {
 
 eventRouter.post("/:id/comments", authRequired(), async (req, res, next) => {
     try {
-        const response = await axios.post(`${process.env.API_MAIN_URL}/event/${req.params.id}/comments`, {...req.body, author_id: res.locals.tokenData.id});
+        const response = await axios.post(`${process.env.API_MAIN_URL}/event/${req.params.id}/comments`, { ...req.body, author_id: res.locals.tokenData.id });
 
         res.status(response.status).json(response.data);
     } catch (e) {
