@@ -125,6 +125,24 @@ eventRouter.get("/:id/participants", async (req, res, next) => {
     }
 });
 
+eventRouter.post("/:id/invite-event/:user_id", authRequired(), verifyEventOwner, async (req, res, next) => {
+    try {
+        const response = await axios.post(`${process.env.API_MAIN_URL}/event/${req.params.id}/invite-event/${req.params.user_id}`, req.body);
+
+        res.status(response.status).json(response.data);
+    } catch (e) {
+
+        // @ts-ignore
+        if (e.isAxiosError && e.response && e.response.status !== 500) {
+            // @ts-ignore
+            res.status(e.response.status).json(e.response.data); return;
+        }
+
+        next(e);
+    }
+});
+
+eventRouter.all("/:id/invite-event/:user_id", error405(["POST"]));
 eventRouter.post("/:id/join-event/auth", authRequired(), async (req, res, next) => {
 
     try {
