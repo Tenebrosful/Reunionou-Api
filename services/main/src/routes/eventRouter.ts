@@ -469,7 +469,7 @@ eventRouter.post("/:id/comments", async (req, res, next) => {
   try {
     const event = await Event.findOne(
       {
-        attributes: ["id", "title", "description", "address", "lat", "long", "owner_id", "createdAt", "updatedAt"],
+        attributes: ["id"],
         where: {
           id: req.params.id
         }
