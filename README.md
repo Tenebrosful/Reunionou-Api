@@ -2,6 +2,8 @@
 
 *Atelier du 21/03/2022 au 30/03/2022*
 
+*[Lire le README-GLOBAL du projet](./README-GLOBAL.md)*
+
 ## Configuration des fichiers d'envirronement
 
 ### `.env` du docker-compose à la racine du projet
@@ -19,14 +21,6 @@ EXPOSED_GATEWAY_API_PORT=
 
 - http://docketu.iutnc.univ-lorraine.fr:62460
 
-## Documents fournis
-
-- [Page Arches](https://arche.univ-lorraine.fr/course/view.php?id=6849)
-- [Consignes](https://arche.univ-lorraine.fr/mod/resource/view.php?id=1406139)
-- [Déployement Docketu](https://arche.univ-lorraine.fr/mod/resource/view.php?id=1151738)
-- [Sujet](https://arche.univ-lorraine.fr/mod/resource/view.php?id=1413704)
-- [Présentaton du projet](https://arche.univ-lorraine.fr/mod/resource/view.php?id=1413708)
-
 ## Contributions (Dépôt API)
 
 - Hugo Bernard `bernar323u`
@@ -37,3 +31,7 @@ EXPOSED_GATEWAY_API_PORT=
   - Déployement de l'API sur Docketu
   - Routes Express de l'API `TS`
   - [Documentation de l'API](https://github.com/Tenebrosful/Reunionou-Api/wiki/Api-Endpoint)
+- Geoffrey Porayko `porayko1u`
+  - Mise en place de la base du Gateway `TS`
+  - Mise en place authentification et token `TS, JWT` 
+  - Mise en place de diverses routes `TS`
