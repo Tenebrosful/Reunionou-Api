@@ -422,6 +422,7 @@ eventRouter.get("/:id/comments", async (req, res, next) => {
         createdAt: comment.createdAt,
         event_id: comment.event_id,
         id: comment.id,
+        media: comment.media,
         message: comment.message,
         updatedAt: comment.updatedAt,
       };
@@ -456,12 +457,14 @@ eventRouter.get("/:id/comments", async (req, res, next) => {
 eventRouter.post("/:id/comments", async (req, res, next) => {
   const requestFields: iNewComment = {
     author_id: req.body.author_id,
+    media: req.body.media,
     message: req.body.message,
   };
 
-  if (!handleDataValidation(commentSchema, requestFields, req, res, true)) return;
+  if (!handleDataValidation(commentSchema, requestFields, req, res)) return;
 
   const validedFields = {
+    media: requestFields.media,
     message: requestFields.message,
     user_id: requestFields.author_id,
   };
@@ -486,6 +489,7 @@ eventRouter.post("/:id/comments", async (req, res, next) => {
       createdAt: comment.createdAt,
       event_id: comment.event_id,
       id: comment.id,
+      media: comment.media,
       message: comment.message,
       updatedAt: comment.updatedAt,
     };

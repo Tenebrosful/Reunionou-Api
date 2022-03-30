@@ -37,7 +37,8 @@ export interface icomment {
   event?: ievent | null,
   author_id: string,
   author?: Omit<iuser, "last_connexion" | "default_event_mail"> | null,
-  message: string,
+  media?: string,
+  message?: string,
   createdAt: Date,
   updatedAt: Date,
 }
