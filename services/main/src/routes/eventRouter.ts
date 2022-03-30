@@ -394,6 +394,8 @@ eventRouter.post("/:id/join-event", async (req, res, next) => {
 
 });
 
+eventRouter.all("/:id/join-event", error405(["POST"]));
+
 eventRouter.get("/:id/comments", async (req, res, next) => {
   try {
     const event = await Event.findOne(
