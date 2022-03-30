@@ -414,6 +414,36 @@ eventRouter.post("/:id/comments", async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
+eventRouter.post("/:id/comment", async (req, res, next) => {
+
+  const commentFields = {
+    event_id: req.params.id,
+    message: req.body.message,
+    user_id: req.body.user_id,
+  };
+
+  try {
+
+    const event = await Event.findOne(
+      {
+        attributes: ["id"],
+        where: {
+          id: req.params.id
+        }
+      });
+
+
+    if (!event) { error404(req, res, `L'évènement '${req.params.id}' est introuvable. (Potentiellement soft-delete)`); return; }
+
+    const eventComment = await Comment.create({...commentFields});
+
+    res.status(201).json(eventComment.toJSON());
+
+  
+  } catch (e) { next(e); }
+
+});
+
 eventRouter.all("/:id/comments", error405(["GET", "POST"]));
 
 export default eventRouter;
