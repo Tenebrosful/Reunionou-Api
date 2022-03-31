@@ -19,7 +19,7 @@ EXPOSED_GATEWAY_API_PORT=
 
 ## Adresse de déployement
 
-- http://docketu.iutnc.univ-lorraine.fr:62460
+- http://docketu.iutnc.univ-lorraine.fr:62461
 
 ## Contributions (Dépôt API)
 
