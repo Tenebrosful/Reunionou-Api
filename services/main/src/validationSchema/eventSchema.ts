@@ -10,7 +10,7 @@ const eventSchema = Joi.object({
   description: Joi.string().normalize().optional(),
   mail: Joi.string().email().optional(),
   owner_id: Joi.string().uuid().optional(),
-  title: Joi.string().alphanum(),
+  title: Joi.string().normalize(),
 });
 
 export default eventSchema;
