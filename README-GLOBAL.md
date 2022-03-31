@@ -56,6 +56,7 @@
     - Participants `Dart, http, flutter_secure_storage`
     - Connexion avec authentification `Dart, http, JWT, flutter_secure_storage`
     - Stockage des données (token, id, username) `Dart, flutter_secure_storage`
+    - Partager un événement `Dart, http, flutter_secure_storage`
 
 
 - Ziyi Wang `wang272u` 
@@ -67,3 +68,4 @@
   - Géolicalisation par adresse `Dart, flutter_google_places, http`
   - Connexion avec authentification `Dart, http, JWT, flutter_secure_storage`
   - Stockage des données (token, id, username) `Dart, flutter_secure_storage`
+  - Partager un événement `Dart, http, flutter_secure_storage`
