@@ -4,7 +4,7 @@
 
 *[Lire le README-GLOBAL du projet](./README-GLOBAL.md)*
 
-## Configuration des fichiers d'envirronement
+## Installation
 
 ### `.env` du docker-compose à la racine du projet
 
@@ -17,9 +17,21 @@ EXPOSED_GATEWAY_API_PORT=
 
 [Voir le dossier config](./config/README.md)
 
+### Installation des dépendences
+
+À la racine du projet
+
+`docker-compose run Reunionou_api_main_g5_v2 npm ci`
+
+### Lancement
+
+À la racine du projet
+
+`docker-compose up`
+
 ## Adresse de déployement
 
-- http://docketu.iutnc.univ-lorraine.fr:62460
+- http://docketu.iutnc.univ-lorraine.fr:62461
 
 ## Contributions (Dépôt API)
 
