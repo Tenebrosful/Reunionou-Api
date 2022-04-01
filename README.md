@@ -33,6 +33,16 @@ EXPOSED_GATEWAY_API_PORT=
 
 - http://docketu.iutnc.univ-lorraine.fr:62461
 
+(Données demo)
+
+```
+jeanMarc7562 - mdpincroyable
+michelzoui - vraimentlemeilleurmdpaumonde<3<3 (admin)
+charlinedepuit88 - 123passwordè_é
+```
+
+
+
 ## Contributions (Dépôt API)
 
 - Hugo Bernard `bernar323u`
