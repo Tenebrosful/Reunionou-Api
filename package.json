@@ -29,7 +29,7 @@
     "jsonwebtoken": "^8.5.1",
     "mariadb": "^3.0.0",
     "reflect-metadata": "^0.1.13",
-    "sequelize": "^6.17.0",
+    "sequelize": "^6.19.0",
     "sequelize-typescript": "^2.1.3"
   }
 }
